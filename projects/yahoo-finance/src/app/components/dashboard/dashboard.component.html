@@ -1,0 +1,200 @@
+<div class="body">
+  <div class="container py-5">
+
+    <!-- Date Header -->
+    <div class="date-header mb-4 text-center text-primary fs-4 fw-bold" role="heading" aria-level="2">
+      {{ 'dashboard.date' | translate: { date: (todaysDate$ | async) } }}
+    </div>
+
+    <!-- Controls Row -->
+    <div class="row mb-5 g-3 justify-content-center">
+      <div class="col-md-3">
+        <app-slider
+          [label]="'stock.selectSigma' | translate"
+          [selectFormGroup]="formGroup"
+          controlName="selectedSigma"
+          [min]="1"
+          [step]="0.5"
+          [max]="5"
+        >
+        </app-slider>
+      </div>
+      <div class="col-md-3">
+        <lib-type-select
+          [label]="'stock.selectLanguage' | translate"
+          [options]="languageOptions"
+          [inputFormGroup]="formGroup"
+          controlName="selectedLanguage">
+        </lib-type-select>
+      </div>
+    </div>
+
+
+
+    <!-- Stock Table -->
+    <div class="table-responsive shadow-sm rounded" role="region" aria-labelledby="stock-table-title">
+      <h2 id="stock-table-title" class="visually-hidden">
+        {{ 'dashboard.stockTable' | translate }}
+      </h2>
+      <div class="d-md-none" *ngIf="stockData$ | async as stockData">
+        <ng-container *ngFor="let data of stockData">
+          <div>
+            <button
+              class="btn btn-link text-decoration-none fw-semibold"
+              (click)="navigateToPage(data.chart.meta.symbol)"
+              aria-label="{{ 'dashboard.navigateTo' | translate:{ symbol: data.chart.meta.symbol } }}">
+              <span>{{ data.chart.meta.symbol }}</span>
+              <span class="badge bg-info ml-3" *ngIf="isInverse(data.chart.meta.symbol)">{{'stock.inverse'|translate}}</span>
+            </button>
+            <span class="fa fa-info-circle" role="button" (click)="openModal(data.chart.meta)"></span>
+          </div>
+          <div class="pl-6 pr-6">
+            <div class="d-flex">
+              <div>{{ 'dashboard.close' | translate }}</div>
+              <div class="flex-grow-1 border-bottom-dotted mb-1 ml-2 mr-2"></div>
+              <div>
+                <span class="badge" [ngClass]="getBadgeColor(data)">{{ data.rows.at(-1)?.close | number:'1.2-2' }}</span>
+                <span
+                  *ngIf="
+                    data?.rows?.length &&
+                    data?.indicators?.bollingerBands?.length
+                  "
+                >
+                  <span
+                    class="badge bg-info ml-3"
+                    *ngIf="
+                      (data?.rows?.at(-1)?.close ?? 0) >
+                      (data?.indicators?.bollingerBands?.at(-dateIndex)?.upper ?? 0)
+                    "
+                  >
+                    {{ 'exceeds.sigma' | translate : { sigma: selectedSigma } }}
+                  </span>
+                </span>
+              </div>
+            </div>
+            <div class="d-flex">
+              <div>{{ 'dashboard.highestFourInLastMonth' | translate }}</div>
+              <div class="flex-grow-1 border-bottom-dotted mb-1 ml-2 mr-2"></div>
+              <div>
+                <span class="badge bg-info">{{ data.indicators.avgofHighest4InLastMonth | number:'1.2-2' }}</span>
+              </div>
+            </div>
+            <ng-container *ngIf="data.indicators.bollingerBands && data.indicators.bollingerBands?.length">
+              <ng-container *ngIf="data.indicators.bollingerBands.at(-dateIndex) as bb">
+                <div class="d-flex">
+                  <div>{{ 'dashboard.lb' | translate }}</div>
+                  <div class="flex-grow-1 border-bottom-dotted mb-1 ml-2 mr-2"></div>
+                  <div>{{ (bb?.lower ?? 0) | number:'1.2-2' }}</div>
+                </div>
+                <div class="d-flex">
+                  <div>{{ 'dashboard.ma' | translate }}</div>
+                  <div class="flex-grow-1 border-bottom-dotted mb-1 ml-2 mr-2"></div>
+                  <div>{{ (bb?.middle ?? 1) | number:'1.2-2' }}</div>
+                </div>
+                <div class="d-flex">
+                  <div>{{ 'dashboard.ub' | translate }}</div>
+                  <div class="flex-grow-1 border-bottom-dotted mb-1 ml-2 mr-2"></div>
+                  <div>{{ (bb?.upper ?? 0) | number:'1.2-2' }}</div>
+                </div>
+              </ng-container>
+            </ng-container>
+          </div>
+        </ng-container>
+      </div>
+      <div class="d-none d-md-block">
+        <table class="table table-hover table-bordered align-middle mb-0">
+          <caption class="visually-hidden">{{ 'dashboard.stockTable' | translate }}</caption>
+
+          <thead class="table-dark text-center">
+            <tr>
+              <th scope="col">{{ 'dashboard.symbol' | translate }}</th>
+              <th scope="col">{{ 'dashboard.close' | translate }}</th>
+              <th scope="col">{{ 'dashboard.highestFourInLastMonth' | translate }}</th>
+              <th scope="col">{{ 'dashboard.lb' | translate }}</th>
+              <th scope="col">{{ 'dashboard.ma' | translate }}</th>
+              <th scope="col">{{ 'dashboard.ub' | translate }}</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <ng-container *ngIf="stockData$ | async as stockData">
+              <tr *ngFor="let data of stockData; trackBy: trackBySymbol" class="text-center">
+                <!-- Symbol as styled button -->
+                <td>
+
+                  <button
+                    class="btn btn-link text-decoration-none fw-semibold"
+                    (click)="navigateToPage(data.chart.meta.symbol)"
+                    aria-label="{{ 'dashboard.navigateTo' | translate:{ symbol: data.chart.meta.symbol } }}">
+                    <span>{{ data.chart.meta.symbol }}</span>
+                    <span class="badge bg-info ml-3" *ngIf="isInverse(data.chart.meta.symbol)">{{'stock.inverse'|translate}}</span>
+                  </button>
+                  <span class="fa fa-info-circle" role="button" (click)="openModal(data.chart.meta)"></span>
+                </td>
+
+                <!-- Last Close -->
+                <td>
+                  <span class="badge" [ngClass]="getBadgeColor(data)">{{ data.rows.at(-1)?.close | number:'1.2-2' }}</span>
+                  <span
+                    *ngIf="
+                      data?.rows?.length &&
+                      data?.indicators?.bollingerBands?.length
+                    "
+                    class="ml-3"
+                  >
+                  
+                    <span
+                      class="badge bg-info"
+                      *ngIf="
+                        (data?.rows?.at(-1)?.close ?? 0) >
+                        (data?.indicators?.bollingerBands?.at(-dateIndex)?.upper ?? 0)
+                      "
+                    >
+                      {{ 'exceeds.sigma' | translate : { sigma: selectedSigma } }}
+                    </span>
+                  </span>
+                </td>
+
+                <!-- Last Month Average -->
+                <td>
+                  <span class="badge bg-info">{{ data.indicators.avgofHighest4InLastMonth | number:'1.2-2' }}</span>
+                </td>
+
+                <ng-container *ngIf="data.indicators.bollingerBands && data.indicators.bollingerBands?.length; else noIndicators">
+                  <ng-container *ngIf="data.indicators.bollingerBands.at(-dateIndex) as bb">
+                    <td>{{ (bb?.lower ?? 0) | number:'1.2-2' }}</td>
+                    <td>{{ (bb?.middle ?? 1) | number:'1.2-2' }}</td>
+                    <td>{{ (bb?.upper ?? 0) | number:'1.2-2' }}</td>
+                  </ng-container>
+                </ng-container>
+
+                <!-- Fallback if no indicators -->
+                <ng-template #noIndicators>
+                  <td colspan="3" class="text-muted">-</td>
+                  <td class="text-muted">-</td>
+                </ng-template>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <ng-template #modalHeaderContent let-headerData="headerData">
+    <h2>{{headerData?.symbol}}</h2>
+  </ng-template>
+  <ng-template #modalBodyContent let-bodyData="bodyData">
+    <div>
+      {{ 'stock.description.' + bodyData.symbol | translate }}
+    </div>
+  </ng-template>
+
+
+
+  <lib-modal #infoModal [showButtons]="false" [widthPct]="60"
+  [modalId]="'modal_1'" [modalHeaderContent]="modalHeaderContent" 
+  [modalBodyContent]="modalBodyContent"  [headerData]="modalData.header"
+  [bodyData]="modalData.body"></lib-modal>
+
+</div>

@@ -1,0 +1,15 @@
+<div [formGroup]="selectFormGroup" class="slider-wrapper">
+    <div class="d-flex align-items-center" [ngClass]="{'flex-column gap-2' : !isInline}">
+        <label [for]="id">{{label}}</label>
+        <div class="d-flex align-items-center gap-2">
+            <input type="range"
+                    [id]="id"
+                    [formControlName]="controlName"
+                    [min]="min"
+                    [max]="max"
+                    [value]="currentValue"
+                    [step]="step">
+            <div class="current-value-display">{{currentValueDisplay$ | async}}</div>
+        </div>
+    </div>
+</div>

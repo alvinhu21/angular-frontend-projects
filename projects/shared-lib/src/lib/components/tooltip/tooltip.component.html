@@ -1,0 +1,5 @@
+<div class="tooltip-container" [ngClass]="{'dotted-underline': !faIcon}">
+  <span *ngIf="faIcon" [ngClass]="'fa fa-'+faIcon"></span>
+  <span class="label-text" [ngClass]="{'visually-hidden': faIcon}">{{tooltipLabel | translate}}</span>
+  <span class="tooltip-box" [ngClass]="'tooltip-box-'+tooltipDirection">{{tooltipText | translate}}</span>
+</div>

@@ -1,0 +1,3 @@
+<div *ngIf="label">{{label}}</div>
+<p *ngIf="timeLeft > 0">{{timeLeft | formatTime}}</p>
+<div *ngIf="messageToShow && timeLeft<=0">{{messageToShow}}</div>

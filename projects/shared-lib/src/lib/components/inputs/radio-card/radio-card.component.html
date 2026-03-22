@@ -1,0 +1,20 @@
+<div [formGroup]="inputFormGroup">
+    <ng-content *ngFor="let option of valueOptions">
+        <div role="button" (click)="selectValue(option)" [ngClass]="{'flex-column mb-2': !isHorizontal, 'flex-row align-items-center': isHorizontal, 'border': isSelected(option)}" class="d-flex card">
+            <label *ngIf="!labelOnRight" class="form-check-label me-1" [for]="id">
+                <span *ngIf="!faIcon">{{option.label | translate}}</span>
+                <i aria-hidden="true" *ngIf="faIcon" class="fa" [ngClass]="faIcon"></i>
+                <img *ngIf="option.imgSrc" [src]="option.imgSrc" />
+            </label>
+            <input name="{{controlName}}" [disabled]="disabled" class="form-radio-input" [id]="id" type="radio" [formControlName]="controlName" [value]="option.value"/>
+            <label *ngIf="labelOnRight" class="form-check-label ms-1" [for]="id">
+                <span *ngIf="!faIcon">{{option.label | translate}}</span>
+                <i aria-hidden="true" *ngIf="faIcon" class="fa" [ngClass]="faIcon"></i>
+                <img *ngIf="option.imgSrc" [src]="option.imgSrc" />
+            </label>
+        </div>
+    </ng-content>
+</div>
+<div class="text-danger" *ngFor="let message of errorMessageList">
+    {{message | translate}}
+</div>

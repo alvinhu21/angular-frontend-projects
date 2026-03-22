@@ -1,0 +1,16 @@
+<div [formGroup]="inputFormGroup" role="button" (click)="selectValue()" [ngClass]="{'flex-column mb-2': !isHorizontal, 'flex-row': isHorizontal, 'border': isSelected}" class="d-flex card">
+    <label *ngIf="!labelOnRight" class="form-check-label me-1" [for]="id">
+        <span *ngIf="!faIcon">{{label | translate}}</span>
+        <i aria-hidden="true" *ngIf="faIcon" class="fa" [ngClass]="faIcon"></i>
+        <img *ngIf="imgSrc" [src]="imgSrc" />
+    </label>
+    <input class="form-check-input" [id]="id" type="checkbox" [disabled]="disabled" [formControlName]="controlName"/>
+    <label *ngIf="labelOnRight" class="form-check-label ms-1" [for]="id">
+        <span *ngIf="!faIcon">{{label | translate}}</span>
+        <i aria-hidden="true" *ngIf="faIcon" class="fa" [ngClass]="faIcon"></i>
+        <img *ngIf="imgSrc" [src]="imgSrc" />
+    </label>
+</div>
+<div class="text-danger" *ngFor="let message of errorMessageList">
+    {{message | translate}}
+</div>

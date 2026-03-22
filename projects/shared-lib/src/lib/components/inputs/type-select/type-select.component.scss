@@ -1,0 +1,60 @@
+.combobox-container {
+  display: inline-block;
+  width: 100%;
+
+  .combobox-input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s;
+
+    &:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+    }
+
+    &:disabled {
+      background-color: #e9ecef;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.type-select-wrapper {
+  position: relative;
+  display: block;
+  width: 100%;
+
+  .type-select-input {
+    padding-right: 2.5rem; // Space for the arrow
+    cursor: pointer;
+
+    // Hides the default browser arrow in Chrome/Edge/Safari
+    &::-webkit-calendar-picker-indicator {
+      display: none !important;
+    }
+  }
+
+  // Custom CSS Arrow
+  .select-arrow {
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    pointer-events: none; // Allows clicks to pass through to the input
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid #6c757d; // The color of the arrow
+    transition: transform 0.2s ease;
+  }
+
+  // Optional: Flip the arrow when focused
+  .type-select-input:focus + .select-arrow {
+    transform: translateY(-50%) rotate(180deg);
+  }
+}

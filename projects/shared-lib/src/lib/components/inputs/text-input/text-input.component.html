@@ -1,0 +1,16 @@
+<div [formGroup]="inputFormGroup" [ngClass]="customClasses">
+    <label class="form-check-label" [for]="id" [ngClass]="{'flex-column mb-2': !isHorizontal}">
+        <span *ngIf="!faIcon">{{label | translate}}</span>
+        <i *ngIf="faIcon" class="fa" [ngClass]="faIcon"></i>
+    </label>
+    <input [id]="id" 
+        class="form-control"
+        [maxlength]="maxlength"
+        [placeholder]="placeholder"
+        [formControlName]="controlName"
+        [disabled]="disabled"
+        (keydown)="selectCharsOnly($event)"/>
+    <div class="text-danger" *ngFor="let message of errorMessageList">
+        {{message | translate}}
+    </div>
+</div>

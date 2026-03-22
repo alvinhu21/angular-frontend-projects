@@ -1,0 +1,40 @@
+<div [formGroup]="inputFormGroup">
+  <label class="form-check-label" [for]="id" [ngClass]="{'flex-column mb-2': !isHorizontal}">
+      <span *ngIf="!faIcon">{{label | translate}}</span>
+      <i *ngIf="faIcon" class="fa" [ngClass]="faIcon"></i>
+  </label>
+  <div class="type-select-wrapper" *ngIf="!useTypeSelect" >
+    <select [formControlName]="controlName" class="form-select">
+      <option *ngFor="let option of options" [value]="option.value">
+        {{option.label}}
+      </option>
+    </select>
+  </div>
+  <div class="type-select-wrapper" *ngIf="useTypeSelect" >
+    <input
+      type="text"
+      [id]="id"
+      [attr.list]="'datalist_' + id"
+      [placeholder]="placeholder"
+      [value]="displayValue"
+      [disabled]="isDisabled"
+      [class.is-invalid]="isInvalid"
+      (input)="onInputChange($event)"
+      (mousedown)="openPicker($event)" 
+      (keyup.enter)="openPicker($event)"
+      (blur)="handleBlur()"
+      class="form-control type-select-input"
+      [formControlName]="controlName"
+      autocomplete="off"
+    />
+    <span class="select-arrow"></span>
+    <datalist [id]="'datalist_' + id">
+      <option *ngFor="let option of options" [value]="option.label"></option>
+    </datalist>
+  </div>
+  <div class="text-danger" *ngFor="let message of errorMessageList">
+    {{message  | translate}}
+  </div>
+</div>
+
+

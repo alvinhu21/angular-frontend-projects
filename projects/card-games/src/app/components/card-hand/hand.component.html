@@ -1,0 +1,12 @@
+<div class="card">
+    <div class="d-flex justify-content-between">
+        <app-card *ngFor="let card of hand"
+            [card]="card"
+            [disabled]="roundOver"
+            [selectedClass]="selectedCardClass"
+            [unselectedClass]="unselectedCardClass"
+            [class]="customClass"
+            [selectedText]="'cardGames.held'"
+        ></app-card>
+    </div>
+</div>

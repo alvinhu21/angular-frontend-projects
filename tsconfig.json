@@ -3,6 +3,7 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "baseUrl": "./", // This is the missing piece
     "strict": true,
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
@@ -11,9 +12,18 @@
     "skipLibCheck": true,
     "isolatedModules": true,
     "experimentalDecorators": true,
+    "moduleResolution": "bundler", // Recommended when using "module": "preserve" or "ESNext"
+    "paths": {
+      "shared-lib": [
+        "./dist/shared-lib"
+      ],
+      "shared-lib/*": [
+        "./dist/shared-lib/*"
+      ]
+    },
     "importHelpers": true,
     "target": "ES2022",
-    "module": "preserve"
+    "module": "ESNext" // Changing "preserve" to "ESNext" is often more stable for Angular workspaces
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
@@ -22,5 +32,31 @@
     "typeCheckHostBindings": true,
     "strictTemplates": true
   },
-  "files": []
+  "files": [],
+  "references": [
+    {
+      "path": "./projects/shared-lib/tsconfig.lib.json"
+    },
+    {
+      "path": "./projects/shared-lib/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/card-games/tsconfig.app.json"
+    },
+    {
+      "path": "./projects/card-games/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/yahoo-finance/tsconfig.app.json"
+    },
+    {
+      "path": "./projects/yahoo-finance/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/pokemon-webapp/tsconfig.app.json"
+    },
+    {
+      "path": "./projects/pokemon-webapp/tsconfig.spec.json"
+    }
+  ]
 }

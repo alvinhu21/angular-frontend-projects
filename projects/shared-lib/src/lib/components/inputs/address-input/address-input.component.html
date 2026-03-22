@@ -1,0 +1,74 @@
+<div class="card">
+    <div class="mb-3">
+        <lib-text-input
+            [id]="'firstName_' + id"
+            [inputFormGroup]="addressFormGroup"
+            [label]="firstNameLabel"
+            placeholder=""
+            [controlName]="firstNameControlName"
+            [errorMessages]="firstNameErrorMessages">    
+        </lib-text-input>
+    </div>
+    <div class="mb-3">
+        <lib-text-input
+            [id]="'lastName_' + id"
+            [inputFormGroup]="addressFormGroup"
+            [label]="lastNameLabel"
+            placeholder=""
+            [controlName]="lastNameControlName"
+            [errorMessages]="lastNameErrorMessages">    
+        </lib-text-input>
+    </div>
+    <div class="mb-3">
+        <lib-text-input
+            [id]="'address_' + id"
+            [inputFormGroup]="addressFormGroup"
+            [label]="addressLabel"
+            placeholder=""
+            [controlName]="addressControlName"
+            [errorMessages]="addressErrorMessages">    
+        </lib-text-input>
+    </div>
+    <div class="mb-3">
+        <lib-text-input 
+            [id]="'city_'+id"
+            [inputFormGroup]="addressFormGroup"
+            [label]="cityLabel"
+            placeholder=""
+            [controlName]="cityControlName"
+            [errorMessages]="cityErrorMessages">    
+        </lib-text-input>
+    </div>
+    <div class="mb-3 row">
+        <div class="col-6">
+            <lib-type-select
+                [id]="'state_'+id"
+                [inputFormGroup]="addressFormGroup"
+                [label]="stateLabel"
+                [options]="stateList"
+                [controlName]="stateControlName"
+                [errorMessages]="stateErrorMessages"> 
+            </lib-type-select>
+        </div>
+        <div class="col-6">
+            <lib-text-input
+                [id]="'zipCode_'+id"
+                [inputFormGroup]="addressFormGroup"
+                [label]="zipCodeLabel"
+                placeholder=""
+                [controlName]="zipCodeControlName"
+                [errorMessages]="zipCodeErrorMessages">    
+            </lib-text-input>
+        </div>
+    </div>
+    <div>
+        <lib-type-select
+            [id]="'country_'+id"
+            [inputFormGroup]="addressFormGroup"
+            [label]="countryLabel"
+            [options]="countryList"
+            [controlName]="countryControlName"
+            [errorMessages]="countryErrorMessages"> 
+        </lib-type-select>
+    </div>
+</div>

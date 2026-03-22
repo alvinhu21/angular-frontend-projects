@@ -1,0 +1,7 @@
+<div class="bar-container" [ngStyle]="{height: barWidth+'px', width: barLength+'px'}" *ngIf="!verticalMode">
+    <div class="inner-bar-h h-100" [ngClass]="bgClass" [ngStyle]="{ width: remainingPct+'%'}"></div>
+</div>
+
+<div class="d-flex bar-container flex-column justify-content-end" [ngStyle]="{height: barLength+'px', width: barWidth+'px'}" *ngIf="verticalMode">
+    <div class="inner-bar-v w-100" [ngClass]="bgClass" [ngStyle]="{height: remainingPct+'%'}"></div>
+</div>

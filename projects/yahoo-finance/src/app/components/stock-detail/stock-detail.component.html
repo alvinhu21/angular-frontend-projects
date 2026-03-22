@@ -1,0 +1,107 @@
+<div class="p-px-24 container">
+  <!-- Header Section -->
+  <section class="header-section mb-6" aria-labelledby="stock-dashboard-title">
+    <h1 id="stock-dashboard-title" class="title">
+      {{ 'dashboard.stockInfo' | translate: { symbol: selectedSymbolForTemplate } }}
+    </h1>
+
+    <p>
+      {{ 'stock.description.' + formGroup.value.selectedSymbol | translate }}
+    </p>
+
+    <!-- Average of highest 4 in last month -->
+    <p *ngIf="(stockDetail$ | async)?.rows?.length">
+      {{ 'stock.averageOfHighest4InLastMonth' | translate: { 
+          average: ( ((stockDetail$ | async)?.rows ?? [])  | avgHighest4) | number:'1.2-2' 
+      } }}
+    </p>
+
+    <!-- Filters -->
+    <div class="row mb-4">
+
+      <div class="col-12 col-md-3" >
+          <app-slider
+            [label]="'stock.selectSigma' | translate"
+            [selectFormGroup]="formGroup"
+            controlName="selectedSigma"
+            [min]="1"
+            [step]="0.5"
+            [max]="5"
+          >
+        </app-slider>
+      </div>
+      <div class="col-12" [ngClass]="select.control === 'selectedMonth' ? 'col-lg-2' : (select.control === 'selectedYear' ? 'col-lg-1' : 'col-lg-3')" *ngFor="let select of selectControls$ | async">
+        <lib-type-select
+          [label]="select.label | translate"
+          [options]="select.options"
+          [inputFormGroup]="formGroup"
+          [controlName]="select.control">
+        </lib-type-select>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stock Table -->
+  <div class="table-wrapper" role="region" aria-labelledby="stock-table-title">
+    <h2 id="stock-table-title" class="visually-hidden">{{ 'dashboard.stockTable' | translate }}</h2>
+
+    <div *ngIf="stockDetail$ | async as detail; else noData" class="d-md-none">
+      <ng-container *ngFor="let d of getFilteredRowsByYear(detail.rows); let i = index; trackBy: trackByIndex">
+        <h3 class="mt-16">
+          {{ d.timestamp * 1000 | date: dateFormat : '' : selectedLanguage }}
+        </h3>
+        <div class="d-flex">
+          <div>{{ 'dashboard.close' | translate }}</div>
+          <div class="flex-grow-1 border-bottom-dotted mb-1 ml-2 mr-2"></div>
+          <div>{{ d.close | number:'1.2-2' }}</div>
+        </div>
+        <div class="d-flex">
+          <div>{{ 'dashboard.lb' | translate }}</div>
+          <div class="flex-grow-1 border-bottom-dotted mb-1 ml-2 mr-2"></div>
+          <div>{{ (d.bollinger?.lower | number:'1.2-2')  ?? ('dashboard.na' | translate) }}</div>
+        </div>
+        <div class="d-flex">
+          <div>{{ 'dashboard.ma' | translate }}</div>
+          <div class="flex-grow-1 border-bottom-dotted mb-1 ml-2 mr-2"></div>
+          <div>{{ (d.bollinger?.middle  | number:'1.2-2')  ?? ('dashboard.na' | translate) }}</div>
+        </div>
+        <div class="d-flex">
+          <div>{{ 'dashboard.ub' | translate }}</div>
+          <div class="flex-grow-1 border-bottom-dotted mb-1 ml-2 mr-2"></div>
+          <div>{{ (d.bollinger?.upper | number:'1.2-2')  ?? ('dashboard.na' | translate) }}</div>
+        </div>
+
+      </ng-container>
+    </div>
+    <div class="d-none d-md-block">
+      <table class="table table-striped table-bordered" role="table">
+        <caption class="visually-hidden">{{ 'dashboard.stockTable' | translate }}</caption>
+        <thead class="table-header">
+          <tr>
+            <th scope="col">{{ 'dashboard.dateLabel' | translate }}</th>
+            <th scope="col">{{ 'dashboard.close' | translate }}</th>
+            <th scope="col">{{ 'dashboard.lb' | translate }}</th>
+            <th scope="col">{{ 'dashboard.ma' | translate }}</th>
+            <th scope="col">{{ 'dashboard.ub' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngIf="stockDetail$ | async as detail; else noData">
+            <tr *ngFor="let d of getFilteredRowsByYear(detail.rows); let i = index; trackBy: trackByIndex">
+              <td>{{ d.timestamp * 1000 | date: dateFormat : '' : selectedLanguage }}</td>
+              <td>{{ d.close | number:'1.2-2' }}</td>
+              <td>{{ (d.bollinger?.lower | number:'1.2-2')  ?? ('dashboard.na' | translate) }}</td>
+              <td>{{ (d.bollinger?.middle  | number:'1.2-2')  ?? ('dashboard.na' | translate) }}</td>
+              <td>{{ (d.bollinger?.upper | number:'1.2-2')  ?? ('dashboard.na' | translate) }}</td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- No Data Template -->
+  <ng-template #noData>
+    <p class="text-center">{{ 'dashboard.na' | translate }}</p>
+  </ng-template>
+</div>

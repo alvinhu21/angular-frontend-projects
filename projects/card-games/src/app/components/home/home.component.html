@@ -1,0 +1,172 @@
+<div class="p-4 container video-poker-machine text-center">
+
+  <div class="machine-header mb-4">
+    <h1 class="display-4 poker-title text-uppercase">
+      {{ 'cardGames.title' | translate }}
+    </h1>
+    <div class="status-bar d-flex justify-content-center gap-3">
+       <span class="badge bg-dark border border-warning text-warning fs-5">
+         {{'cardGames.amountOnHand' | translate}} {{ totalScore }}
+       </span>
+    </div>
+  </div>
+
+  <div class="row machine-screen p-3 rounded-3 border border-4 border-secondary shadow-lg">
+    
+    <div class="col-12 col-lg-5 mb-4 paytable-container rounded p-2">
+      <div class="d-flex justify-content-between paytable-row py-1 px-2 border-bottom border-secondary" 
+           *ngFor="let handName of handNames">
+        <div *ngIf="scoreType$ | async as scoreType">
+          <div [class.active-payout]="scoreType?.handName === handName.label">
+            <div class="fw-bold text-uppercase">{{'pokerHand.'+handName.label | translate}}</div>
+            <div class="border-bottom border-dotted mx-2 flex-grow-1 opacity-25"></div>
+            <div class="payout-value text-warning fw-bold">{{handName.value}}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-7 d-flex flex-column justify-content-between">
+      
+      <div class="hand-announcer mb-3" style="min-height: 50px;">
+        <ng-container *ngIf="scoreType$ | async as scoreType">
+          <div class="animate__animated animate__bounceIn">
+            <span class="badge hand-winner-glow px-4 py-2 fs-4">
+              {{ scoreType.handName }}
+            </span>
+          </div>
+        </ng-container>
+      </div>
+
+      <div class="card-table py-4 px-2 rounded shadow-inner">
+        <app-hand
+          #cardHand
+          [hand]="hand"
+          [roundOver]="roundOver"
+          (onDraw)="draw()">
+        </app-hand>
+      </div>
+
+      <div class="betting-console mt-4 p-3 bg-dark rounded border border-secondary">
+        <div class="row">
+          <div class="col-md-6 text-start">
+            <div *ngIf="!showWagerInput" class="wager-display">
+              <label class="fs-3 small text-uppercase d-block">{{'cardGames.amountWagered' | translate}}</label>
+              <span class="fs-3 text-white fw-bold">{{wager}}</span>
+            </div>
+            
+            <div *ngIf="showWagerInput" class="wager-input-wrapper">
+              <lib-text-input 
+                [label]="'cardGames.wagerLabel'" 
+                [placeholder]="'0'" 
+                [disabled]="roundOver" 
+                [inputFormGroup]="formGroup" 
+                controlName="wager" 
+                [allowedRegex]="numbersOnly">
+              </lib-text-input>
+            </div>
+          </div>
+          
+          <div class="col-md-6 text-end d-flex align-items-center justify-content-end">
+            <button class="btn btn-lg btn-danger action-button px-5 text-uppercase fw-black" 
+                    [disabled]="roundOver && !showWagerInput"
+                    (click)="draw()">
+                    <span *ngIf="!roundOver">{{'cardGames.draw' | translate}}</span>
+                    <span *ngIf="roundOver">{{'cardGames.deal' | translate}}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<ng-template #modalHeaderContent>
+  <div class="text-center w-100">
+    <h2 class="text-uppercase fw-bold" [class.text-danger]="totalScore === 0" [class.text-success]="totalScore > 0">
+      {{ (totalScore === 0 ? 'cardGames.outOfMoney.header' : 'cardGames.youWin.header') | translate }}
+    </h2>
+  </div>
+</ng-template>
+
+<ng-template #modalBodyContent>
+  <div class="text-center py-4">
+    <div *ngIf="totalScore === 0" class="out-of-credits-container">
+      <i class="bi bi-exclamation-octagon text-danger display-1 mb-3"></i>
+      <p class="fs-4 text-uppercase fw-bold tracking-widest text-white">
+        {{'cardGames.outOfMoney.body' | translate}}
+      </p>
+    </div>
+    
+    <div *ngIf="totalScore > 0" class="winner-container animate__animated animate__jackInTheBox">
+      <i class="bi bi-trophy-fill text-warning display-1 mb-3"></i>
+      <p class="fs-3 text-uppercase fw-black text-warning">
+        {{'cardGames.youWin.body' | translate}}
+      </p>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #modalFooterContent>
+  <div class="d-grid gap-3 w-100 px-4 pb-4">
+    <button class="btn btn-lg btn-success action-button-poker py-3 text-uppercase fw-bold" 
+            (click)="closeModal()" 
+            *ngIf="totalScore > 0">
+      {{'cardGames.youWin.keepGoing' | translate}}
+    </button>
+    
+    <button class="btn btn-lg btn-danger action-button-poker py-3 text-uppercase fw-bold" 
+            (click)="startOver()">
+      {{'cardGames.outOfMoney.newGame' | translate}}
+    </button>
+  </div>
+</ng-template>
+
+
+<lib-modal #gameOverModal [widthPct]="40" [showButtons]="false" [modalHeaderContent]="modalHeaderContent" [modalBodyContent]="modalBodyContent" [modalFooterContent]="modalFooterContent" ></lib-modal>
+
+<ng-template #nameModalHeaderContent>
+  <div class="text-center w-100 border-bottom border-secondary pb-2">
+    <h2 class="text-uppercase fw-black tracking-tighter text-info">
+      {{'cardGames.enterName' | translate}}
+    </h2>
+  </div>
+</ng-template>
+
+<ng-template #nameModalBodyContent>
+  <div class="p-3 bg-dark-soft rounded">
+    <div class="mb-4">
+      <lib-text-input 
+        [label]="'cardGames.enterFirstName'"
+        [placeholder]="'ENTER FIRST NAME'"
+        [inputFormGroup]="formGroup" 
+        controlName="firstName">
+      </lib-text-input>
+    </div>
+    <div class="mb-2">
+      <lib-text-input 
+        [label]="'cardGames.enterLastName'"
+        [placeholder]="'ENTER LAST NAME'"
+        [inputFormGroup]="formGroup" 
+        controlName="lastName">
+      </lib-text-input>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #nameModalFooterContent>
+  <div class="w-100 px-4 pb-4">
+    <button class="btn btn-lg btn-info w-100 py-3 action-button-poker text-uppercase fw-black" 
+            (click)="newGame()">
+      {{'cardGames.startGame' | translate}}
+    </button>
+  </div>
+</ng-template>
+<lib-modal #nameModal
+  [widthPct]="40"
+  [showButtons]="false"
+  [modalHeaderContent]="nameModalHeaderContent"
+  [modalBodyContent]="nameModalBodyContent"
+  [modalFooterContent]="nameModalFooterContent">
+</lib-modal>

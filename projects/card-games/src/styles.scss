@@ -1,0 +1,424 @@
+@use 'sass:math';
+@use 'sass:color';
+@use 'sass:map'; // <--- add this
+// ==============================================
+// Theme Variables
+// ==============================================
+$theme-colors: (
+  primary: #3498db,
+  secondary: #2ecc71,
+  accent: #f39c12,
+  gold: #ae9142,
+  text-dark: #212529,
+  text-light: #f8f9fa,
+  bg-light: #f8f9fa,
+  bg-blue: #0000FF,
+  bg-dark: #1e1e1e,
+  table-border: #dee2e6
+);
+
+
+
+$font-base: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+$spacing-unit: 0.125rem;
+$border-radius: 0.5rem; // 8px
+$transition-default: 0.25s ease-in-out;
+
+// ==============================================
+// Functions
+// ==============================================
+// Convert px to rem
+@function rem($px) {
+  @return #{math.div($px, 16)}rem;
+}
+
+// Get color from theme map
+@function color($key) {
+  @return map.get($theme-colors, $key);
+}
+
+// Adjust color lightness safely
+@function adjust($color-key, $lightness) {
+  @return color.adjust(color($color-key), $lightness: $lightness);
+}
+
+// ==============================================
+// Mixins
+// ==============================================
+@mixin flex-center($direction: row) {
+  display: flex;
+  flex-direction: $direction;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin transition($property: all, $duration: $transition-default, $timing: ease-in-out) {
+  transition: $property $duration $timing;
+}
+
+// ==============================================
+// Base Styles
+// ==============================================
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: $font-base;
+  color: color(text-dark);
+  background-color: color(bg-blue);
+  margin: 0;
+  padding: 0;
+  line-height: 1.6;
+  font-size: 16px;
+}
+
+a {
+  color: color(primary);
+  text-decoration: none;
+  font-weight: 500;
+  @include transition(color);
+
+  &:hover,
+  &:focus {
+    color: adjust(primary, -12%);
+    text-decoration: underline;
+  }
+}
+
+// ==============================================
+// Buttons
+// ==============================================
+.button {
+  @include flex-center;
+  padding: rem(12) rem(28);
+  border: none;
+  border-radius: $border-radius;
+  cursor: pointer;
+  font-size: rem(15);
+  font-weight: 600;
+  color: color(text-light);
+  background-color: color(primary);
+  box-shadow: 0 3px 8px rgba(color(primary), 0.25);
+  @include transition(background, 0.2s);
+
+  &:hover,
+  &:focus {
+    background-color: adjust(primary, -10%);
+    box-shadow: 0 5px 12px rgba(color(primary), 0.35);
+  }
+
+  &--secondary {
+    background-color: color(secondary);
+    box-shadow: 0 3px 8px rgba(color(secondary), 0.25);
+
+    &:hover,
+    &:focus {
+      background-color: adjust(secondary, -10%);
+      box-shadow: 0 5px 12px rgba(color(secondary), 0.35);
+    }
+  }
+
+  &--accent {
+    background-color: color(accent);
+
+    &:hover,
+    &:focus {
+      background-color: adjust(accent, -10%);
+    }
+  }
+}
+
+// ==============================================
+// Cards
+// ==============================================
+%card-base {
+  padding: rem(20);
+  border-radius: rem(10);
+  background-color: #fff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.card {
+  @extend %card-base;
+
+  &__title {
+    font-size: rem(20);
+    font-weight: 700;
+    color: color(primary);
+    margin-bottom: rem(10);
+  }
+
+  &__content {
+    font-size: rem(15);
+    color: adjust(text-dark, -5%);
+  }
+}
+
+// ==============================================
+// Layout
+// ==============================================
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.section {
+  padding: 4rem 1rem;
+  text-align: center;
+}
+
+// ==============================================
+// Headers
+// ==============================================
+.date-header {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: color(text-dark);
+  margin-bottom: 1.25rem;
+  letter-spacing: 0.5px;
+}
+
+// ==============================================
+// Tables
+// ==============================================
+.table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-top: 1rem;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  border-radius: $border-radius;
+  overflow: hidden;
+
+  th,
+  td {
+    border: 1px solid color(table-border);
+    padding: 0.9rem;
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  tbody tr:nth-child(odd) {
+    background-color: color(bg-light);
+  }
+
+  thead th {
+    background-color: color(primary);
+    color: color(text-light);
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.6px;
+  }
+
+  tbody tr:hover {
+    background-color: adjust(primary, 45%);
+  }
+}
+
+// ==============================================
+// Links
+// ==============================================
+.stock-link,
+.btn-link {
+  color: color(primary);
+  text-decoration: none;
+  font-weight: 500;
+  @include transition(color);
+
+  &:hover,
+  &:focus {
+    color: adjust(primary, -15%);
+    text-decoration: underline;
+  }
+}
+
+// ==============================================
+// Responsive (Mobile-First)
+// ==============================================
+@media (min-width: 769px) {
+  .date-header { font-size: 1.5rem; }
+  .table { font-size: 0.95rem; }
+  .button { padding: rem(12) rem(28); font-size: rem(15); }
+}
+
+@media (max-width: 768px) {
+  .date-header { font-size: 1.25rem; }
+  .table { font-size: 0.875rem; }
+  .button { padding: rem(10) rem(20); font-size: rem(14); }
+}
+
+// ==============================================
+// Utility Classes: Spacing & Font Sizes
+// ==============================================
+@for $i from 0 through 100 {
+  .fs-#{$i} { font-size: $i * $spacing-unit; }
+  .lh-#{$i} { line-height: $i * $spacing-unit; }
+  .p-#{$i} { padding: $i * $spacing-unit; }
+  .pt-#{$i} { padding-top: $i * $spacing-unit; }
+  .pr-#{$i} { padding-right: $i * $spacing-unit; }
+  .pb-#{$i} { padding-bottom: $i * $spacing-unit; }
+  .pl-#{$i} { padding-left: $i * $spacing-unit; }
+  .px-#{$i} { padding-left: $i * $spacing-unit; padding-right: $i * $spacing-unit; }
+  .py-#{$i} { padding-top: $i * $spacing-unit; padding-bottom: $i * $spacing-unit; }
+
+  .m-#{$i} { margin: $i * $spacing-unit; }
+  .mt-#{$i} { margin-top: $i * $spacing-unit; }
+  .mr-#{$i} { margin-right: $i * $spacing-unit; }
+  .mb-#{$i} { margin-bottom: $i * $spacing-unit; }
+  .ml-#{$i} { margin-left: $i * $spacing-unit; }
+  .mx-#{$i} { margin-left: $i * $spacing-unit; margin-right: $i * $spacing-unit; }
+  .my-#{$i} { margin-top: $i * $spacing-unit; margin-bottom: $i * $spacing-unit; }
+}
+
+
+.video-poker-machine {
+  background: radial-gradient(circle, #2a2a2a 0%, #000000 100%);
+  color: #fff;
+  min-height: 100vh;
+}
+
+.machine-screen {
+  background-color: #00008b; // Classic Navy Blue Screen
+  border-color: #444 !important;
+}
+
+.paytable-container {
+  background-color: rgba(0, 0, 0, 0.5);
+  font-family: 'Courier New', Courier, monospace;
+}
+
+.active-payout {
+  background-color: #ffff00;
+  color: #000;
+  animation: flash 1s infinite;
+}
+
+.hand-winner-glow {
+  background: linear-gradient(180deg, #ff0 0%, #cc0 100%);
+  color: #000;
+  box-shadow: 0 0 15px #ff0;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.action-button {
+  box-shadow: 0 5px 0 #800;
+  transition: all 0.1s;
+  &:active {
+    transform: translateY(4px);
+    box-shadow: 0 1px 0 #800;
+  }
+}
+
+@keyframes flash {
+  50% { opacity: 0.5; }
+}
+
+/* Custom "Physical" Button Style */
+.action-button-poker {
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 6px 0 rgba(0,0,0,0.4);
+  transition: all 0.1s ease;
+  letter-spacing: 2px;
+  
+  &:active {
+    transform: translateY(4px);
+    box-shadow: 0 2px 0 rgba(0,0,0,0.4);
+  }
+}
+
+.bg-dark-soft {
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+}
+
+.tracking-widest {
+  letter-spacing: 0.15em;
+}
+
+/* Make sure lib-modal content looks like a casino kiosk */
+::ng-deep .modal-content {
+  background: #0d0d0d !important;
+  border: 3px solid #444 !important;
+  color: #fff !important;
+  box-shadow: 0 0 50px rgba(0,0,0,0.9) !important;
+}
+
+.poker-card-container {
+  display: inline-block;
+  margin: 0 5px;
+  perspective: 1000px; /* Prepares for potential flip animations */
+}
+
+/* The "HELD" Label */
+.held-indicator {
+  position: absolute;
+  top: -25px; /* Pulls it above the card */
+  left: 0;
+  right: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+
+  .held-text {
+    background: #ffcc00; // Classic Vegas Gold/Yellow
+    color: #000;
+    font-size: 0.8rem;
+    font-weight: 900;
+    border-radius: 2px;
+    box-shadow: 0 0 10px rgba(255, 204, 0, 0.6);
+    letter-spacing: 1px;
+    border: 1px solid #000;
+  }
+}
+
+/* The Card Face Wrapper */
+.card-sprite-wrapper {
+  cursor: pointer;
+  transition: transform 0.1s ease-in-out;
+  border-radius: 8px;
+  overflow: hidden;
+
+  &:hover:not(.card-disabled) {
+    transform: translateY(-5px);
+  }
+
+  &.card-selected {
+    /* Visual feedback for the card itself when held */
+    outline: 3px solid #ffcc00;
+    box-shadow: 0 0 20px rgba(255, 204, 0, 0.4);
+  }
+}
+
+.card-face {
+  background-color: white;
+  min-height: 150px; /* Adjust based on your asset size */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* If cardImage contains SVG/IMG, make sure it fills well */
+  ::ng-deep svg, ::ng-deep img {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+.card-disabled {
+  cursor: default;
+  filter: grayscale(20%) brightness(90%);
+}
+
+.wager-display{
+  display:flex;
+  align-items: center;
+}

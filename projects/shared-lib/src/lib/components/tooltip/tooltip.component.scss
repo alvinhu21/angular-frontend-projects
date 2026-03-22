@@ -1,0 +1,96 @@
+.tooltip-container {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+
+  // Show tooltip on hover
+  &:hover .tooltip-box {
+    visibility: visible;
+    opacity: 1;
+  }
+}
+
+.dotted-underline {
+  border-bottom: 1px dotted black;
+}
+
+.tooltip-box {
+  position: absolute;
+  z-index: 10; // Increased for better overlay reliability
+  width: 120px;
+  padding: 8px 4px;
+  background-color: #333; // Slightly softer than pure black
+  color: #ffffff;
+  text-align: center;
+  border-radius: 4px;
+  font-size: 14px;
+  
+  // Transition
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+
+  // Base Arrow Style
+  &::after {
+    content: "";
+    position: absolute;
+    border-width: 5px;
+    border-style: solid;
+  }
+
+  // Position: Top
+  &.tooltip-box-top {
+    bottom: 125%; 
+    left: 50%;
+    transform: translateX(-50%); // Perfectly centers the box
+
+    &::after {
+      top: 100%;
+      left: 50%;
+      margin-left: -5px;
+      border-color: #333 transparent transparent transparent;
+    }
+  }
+
+  // Position: Bottom
+  &.tooltip-box-bottom {
+    top: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+
+    &::after {
+      bottom: 100%;
+      left: 50%;
+      margin-left: -5px;
+      border-color: transparent transparent #333 transparent;
+    }
+  }
+
+  // Position: Left
+  &.tooltip-box-left {
+    right: 120%;
+    top: 50%;
+    transform: translateY(-50%);
+
+    &::after {
+      top: 50%;
+      left: 100%;
+      margin-top: -5px;
+      border-color: transparent transparent transparent #333;
+    }
+  }
+
+  // Position: Right
+  &.tooltip-box-right {
+    left: 120%;
+    top: 50%;
+    transform: translateY(-50%);
+
+    &::after {
+      top: 50%;
+      right: 100%;
+      margin-top: -5px;
+      border-color: transparent #333 transparent transparent;
+    }
+  }
+}

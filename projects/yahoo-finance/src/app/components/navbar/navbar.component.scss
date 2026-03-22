@@ -1,0 +1,28 @@
+.navbar {
+    background-color: #343a40; /* Dark background like table headers */
+    padding: 1rem 3rem;
+}
+
+.nav-list {
+    list-style: none;
+    display: flex;
+    gap: 1.5rem; /* space between items */
+    margin: 0;
+    padding: 0;
+}
+
+.nav-item {
+    /* Optional additional styling */
+}
+
+.nav-link {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s;
+}
+
+.nav-link:hover {
+    color: #ffc107; /* Highlight on hover */
+    text-decoration: underline;
+}

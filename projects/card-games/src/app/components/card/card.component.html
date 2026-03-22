@@ -1,0 +1,23 @@
+<div class="poker-card-container position-relative">
+    <div *ngIf="card?.selected" 
+         class="held-indicator animate__animated animate__fadeInDown"
+         [attr.aria-label]="selectedText | translate">
+        <span class="held-text px-2 py-1 text-uppercase fw-black">
+            {{selectedText | translate}}
+        </span>
+    </div>
+
+    <div class="card-sprite-wrapper"
+         [ngClass]="customClass" 
+         [class.card-selected]="card?.selected"
+         [class.card-disabled]="disabled"
+         [attr.role]="disabled ? null : 'button'" 
+         (click)="!disabled && toggleSelected()">
+        
+        <div class="card-face border border-2 rounded shadow-sm" 
+             [innerHTML]="cardImage">
+        </div>
+
+        <div *ngIf="card?.selected" class="selection-glow"></div>
+    </div>
+</div>
