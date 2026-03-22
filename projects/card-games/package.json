@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "start:all": "concurrently \"cd C:/Users/alvin/java-workspace/poker && mvn spring-boot:start\" \"npm run start:angular\"",
+    "start:all": "npm run start:angular",
     "start:server": "node server/server.js",
     "start:angular": "ng serve --open",
     "build:lib": "cd ../shared-lib",
