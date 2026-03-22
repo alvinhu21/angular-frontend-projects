@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
 import { HandComponent } from '../card-hand/hand.component';
 import { PokerService } from '../../services/poker.service';
 import { ModalComponent,  TextInputComponent,profanityValidator  } from 'shared-lib';
-import { catchError, Observable, of, Subject, switchMap, takeUntil, tap, timer } from 'rxjs';
+import { catchError, Observable, of, Subject, takeUntil, tap } from 'rxjs';
 import { Player } from '../../models/player';
 
 @Component({
@@ -31,25 +31,14 @@ export class HomeComponent implements OnInit, OnDestroy {
   destroy$: Subject<void> = new Subject<void>();
   formGroup: FormGroup =  new FormGroup({
     wager: new FormControl(''),
-    firstName: new FormControl('Alvin', {validators: [Validators.required, profanityValidator],updateOn: 'blur'}),
-    lastName: new FormControl('Hu', {validators: [Validators.required, profanityValidator],updateOn: 'blur'}),
+    firstName: new FormControl('', {validators: [Validators.required, profanityValidator],updateOn: 'blur'}),
+    lastName: new FormControl('', {validators: [Validators.required, profanityValidator],updateOn: 'blur'}),
   });
   showWagerInput: boolean = true;
   
   @ViewChild('gameOverModal') gameOverModal!: ModalComponent;
   @ViewChild('nameModal') nameModal!: ModalComponent;
   @ViewChild('cardHand') cardHand!: HandComponent;
-
-
-  addressFormGroup = new FormGroup({
-    firstName: new FormControl('Alvin', {validators: [Validators.required, profanityValidator],updateOn: 'blur'}),
-    lastName: new FormControl('Hu', {validators: [Validators.required, profanityValidator],updateOn: 'blur'}),
-    address: new FormControl('155 A st', {updateOn: 'blur'}),
-    city: new FormControl('State', {updateOn: 'blur'}),
-    state: new FormControl('IN'),
-    zipCode: new FormControl('46201', {updateOn: 'blur'}),
-    country: new FormControl('US'),
-  });
 
   constructor(private router: Router,
     private translateService: TranslateService,
@@ -59,47 +48,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.translateService.use('en');
   }
 
-  /*
-              case ROYAL_FLUSH:
-                handType = "Royal Flush";
-                handValue = 250;
-                break;
-            case STRAIGHT_FLUSH:
-                handType = "Straight Flush";
-                handValue = 50;
-                break;
-            case FOUR_OF_A_KIND:
-                handType = "Four of a Kind";
-                handValue = 25;
-                break;
-            case FULL_HOUSE:
-                handType = "Full House";
-                handValue = 9;
-                break;
-            case FLUSH:
-                handType = "Flush";
-                handValue = 6;
-                break;
-            case STRAIGHT:
-                handType = "Straight";
-                handValue = 4;
-                break;
-            case THREE_OF_A_KIND:
-                handType = "Three of a kind";
-                handValue = 3;
-                break;
-            case TWO_PAIR:
-                handType = "Two Pair";
-                handValue = 2;
-                break;
-            case JACKS_OR_BETTER:
-                handType = "Jacks or better";
-                handValue = 1;
-                break;
-            default:
-                handType = "High card";
-                handValue = 0;
-                */
   handNames = [
     {label: 'royalFlush',value:250},
     {label: 'straightFlush',value:50},
