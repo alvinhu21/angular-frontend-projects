@@ -24,6 +24,7 @@
 // script when the directory can't be fetched (it sits behind a bot check). Refresh the snapshot
 // from a downloaded nasdaqtraded.txt with: node buy-scan.mjs --snapshot-from nasdaqtraded.txt
 
+import { spawnSync } from 'node:child_process';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -630,8 +631,22 @@ function parseArgs(argv) {
   return out;
 }
 
+/**
+ * Cloud sandboxes reach the internet only through the proxy in HTTPS_PROXY, which Node's fetch
+ * ignores unless NODE_USE_ENV_PROXY is set (Node 22.21 and later): such a run starts over with it.
+ */
+function needsProxyRelaunch() {
+  return Boolean(process.env.HTTPS_PROXY || process.env.https_proxy) && process.env.NODE_USE_ENV_PROXY !== '1';
+}
+
 const isMain = process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/\\/g, '/').split('/').pop());
-if (isMain) {
+if (isMain && needsProxyRelaunch()) {
+  const child = spawnSync(process.execPath, process.argv.slice(1), {
+    stdio: 'inherit',
+    env: { ...process.env, NODE_USE_ENV_PROXY: '1', NODE_NO_WARNINGS: '1' },
+  });
+  process.exit(child.status ?? 1);
+} else if (isMain) {
   main().catch((err) => {
     console.error(`buy scan failed: ${err.stack ?? err}`);
     process.exit(1);
