@@ -1,0 +1,307 @@
+// A broadcast standings board: bevelled navy rows under a gold title, money in the board's display
+// face. Contrast: warm text on tile blue 8.4:1, gold on navy-900 12.0:1, ink on gold 12.0:1,
+// dim text on navy-800 9.0:1, --jp-wrong on navy-800 5.6:1.
+.results {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 68rem;
+  margin: 0 auto;
+  padding: clamp(1rem, 3vw, 2.5rem) 1rem 4rem;
+}
+
+.results__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding-bottom: 1rem;
+  text-align: center;
+  border-bottom: 2px solid rgb(255 203 61 / 0.5);
+}
+
+.results__back {
+  align-self: flex-start;
+  font-weight: 600;
+  color: var(--jp-text-dim);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--jp-text);
+    text-decoration: underline;
+  }
+
+  &::before {
+    content: '‹ ';
+  }
+}
+
+.results__title {
+  margin: 0;
+  font-family: var(--jp-font-display);
+  font-weight: 700;
+  font-size: clamp(2.25rem, 7vw, 4.5rem);
+  line-height: 1;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--jp-gold);
+  text-shadow: 0.05em 0.05em 0 var(--jp-line), 0 0 0.5em rgb(255 203 61 / 0.3);
+  animation: results-title-in 700ms var(--jp-ease) both;
+}
+
+.results__subtitle {
+  margin: 0;
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  color: var(--jp-text-dim);
+}
+
+.results__notice,
+.results__loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  margin: 0;
+  padding: 3rem 1.5rem;
+  font-size: 1.25rem;
+  text-align: center;
+  color: var(--jp-text);
+
+  p {
+    margin: 0;
+    max-width: 36ch;
+  }
+
+  a {
+    text-decoration: none;
+  }
+}
+
+.results__loading {
+  color: var(--jp-text-dim);
+}
+
+.results__inline-error {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.6rem 0.9rem;
+  font-weight: 700;
+  color: var(--jp-wrong);
+  border: 2px solid currentColor;
+  border-radius: var(--gs-radius-sm);
+}
+
+// The board frame - the same bevel and gold hairline as the clue card.
+.results__board {
+  overflow-x: auto;
+  border: 3px solid var(--jp-line);
+  border-radius: var(--gs-radius-sm);
+  background: var(--jp-navy-800);
+  box-shadow: var(--jp-bevel), 0 0 0 1px rgb(255 203 61 / 0.35), 0 1.25rem 2.5rem rgb(0 0 0 / 0.45);
+  transition: opacity 150ms ease;
+}
+
+.results__board--loading {
+  opacity: 0.6;
+}
+
+.standings {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--jp-text);
+
+  th,
+  td {
+    padding: 0.85rem 1rem;
+    text-align: left;
+    vertical-align: middle;
+  }
+
+  .standings__score {
+    text-align: right;
+  }
+
+  thead th {
+    font-family: var(--jp-font-display);
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-shadow: none;
+    color: var(--jp-gold);
+    background: linear-gradient(180deg, var(--jp-navy-900), var(--jp-navy-950));
+    border-bottom: 3px solid var(--jp-line);
+  }
+}
+
+.standings__row {
+  background: linear-gradient(180deg, var(--jp-tile-mid), var(--jp-tile-bottom));
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.14);
+  border-top: 2px solid var(--jp-line);
+  animation: results-row-in 360ms var(--jp-ease) both;
+
+  // Each new game starts under a gold rule, so a game's players read as one block.
+  &.standings__row--game-start {
+    border-top: 3px solid var(--jp-gold-deep);
+  }
+}
+
+.standings__row--winner {
+  background: linear-gradient(180deg, var(--jp-tile-top), var(--jp-tile-mid));
+}
+
+.standings__player {
+  font-weight: 600;
+}
+
+.standings__name {
+  display: block;
+  font-size: 1.2rem;
+  overflow-wrap: anywhere;
+}
+
+// Only on phones - see the breakpoint below.
+.standings__player-game {
+  display: none;
+  margin-top: 0.2rem;
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: var(--jp-text-dim);
+}
+
+.standings__place {
+  white-space: nowrap;
+}
+
+.standings__medal {
+  display: inline-block;
+  min-width: 2.6em;
+  padding: 0.15em 0.55em;
+  font-family: var(--jp-font-display);
+  font-weight: 700;
+  font-size: 1.15rem;
+  text-align: center;
+  color: var(--jp-gold);
+  background: var(--jp-navy-900);
+  border: 2px solid var(--jp-gold-deep);
+  border-radius: 999px;
+}
+
+.standings__medal--first {
+  color: var(--jp-ink);
+  background: linear-gradient(180deg, #ffe07a, var(--jp-gold) 45%, var(--jp-gold-deep));
+  border-color: var(--jp-line);
+  box-shadow: 0 0 0.75rem rgb(255 203 61 / 0.45);
+}
+
+.standings__of {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.95rem;
+  color: var(--jp-text-dim);
+}
+
+.standings__score {
+  font-family: var(--jp-font-display);
+  font-weight: 700;
+  font-size: 1.6rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--jp-gold);
+  text-shadow: 0.05em 0.05em 0 var(--jp-line);
+}
+
+.standings__score--negative {
+  color: var(--jp-wrong);
+}
+
+.standings__game-no {
+  display: block;
+  font-family: var(--jp-font-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.standings__game-meta {
+  display: block;
+  font-size: 0.95rem;
+  color: var(--jp-text-dim);
+}
+
+.pager {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.pager__status {
+  min-width: 9rem;
+  font-family: var(--jp-font-display);
+  font-weight: 500;
+  font-size: 1.1rem;
+  letter-spacing: 0.06em;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--jp-text-dim);
+}
+
+// Phones: four columns won't fit at a readable size, so the Game column folds under each name
+// instead of everything shrinking.
+@media (max-width: 40rem) {
+  .standings {
+    th,
+    td {
+      padding: 0.7rem 0.6rem;
+    }
+  }
+
+  .standings__game {
+    display: none;
+  }
+
+  .standings__player-game {
+    display: block;
+  }
+
+  .standings__score {
+    font-size: 1.3rem;
+  }
+
+  .pager {
+    gap: 0.5rem;
+  }
+
+  .pager__status {
+    min-width: 0;
+    font-size: 1rem;
+  }
+}
+
+@keyframes results-title-in {
+  from {
+    opacity: 0;
+    transform: scale(1.12);
+    letter-spacing: 0.2em;
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes results-row-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.4rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

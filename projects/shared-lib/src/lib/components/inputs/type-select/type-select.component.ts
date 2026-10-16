@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, Self, forwardRef, inject } from '@angular/core';
-import { ReactiveFormsModule, ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl   } from '@angular/forms';
+import { Component, Input, forwardRef, inject } from '@angular/core';
+import { ReactiveFormsModule, ControlValueAccessor, NG_VALUE_ACCESSOR, NgControl } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { BaseInput } from '../baseInput';
-
+import { Option } from '../../../models/options';
 
 @Component({
   selector: 'lib-type-select',
@@ -20,9 +20,10 @@ import { BaseInput } from '../baseInput';
   styleUrls: ['./type-select.component.scss']
 })
 export class TypeSelectComponent extends BaseInput {
-  @Input() options: { label: string; value: any }[] = [];
+  @Input() options: Option[] = [];
   @Input() useTypeSelect: boolean = false;
-// Inject NgControl safely
+  @Input() clearable: boolean = true; // Option to enable/disable clear button
+
   public controlDir = inject(NgControl, { self: true, optional: true });
 
   displayValue: string = '';
@@ -35,24 +36,19 @@ export class TypeSelectComponent extends BaseInput {
   constructor() {
     super();
     if (this.controlDir) {
-      // Connect our component to the Angular Form logic
       this.controlDir.valueAccessor = this;
     }
-  }
-
-  ngOnInit(): void {
-    // Logic to run on init if needed
   }
 
   get isInvalid(): boolean {
     return !!(this.controlDir?.invalid && this.controlDir?.touched);
   }
 
-  // Add this method to your TypeSelectComponent
   openPicker(event: Event): void {
     const input = event.target as HTMLInputElement;
-    // This triggers the native browser datalist dropdown
-    input.showPicker(); 
+    if (typeof input.showPicker === 'function' && !this.isDisabled) {
+      input.showPicker();
+    }
   }
 
   onInputChange(event: Event): void {
@@ -70,18 +66,23 @@ export class TypeSelectComponent extends BaseInput {
 
     this.onChange(this.internalValue);
   }
-  handleBlur(): void {
-    // Notifies the Angular form that the user has interacted with/left the field
+
+  clearSelection(event: MouseEvent): void {
+    event.stopPropagation();
+    this.internalValue = null;
+    this.displayValue = '';
+    this.onChange(this.internalValue);
     this.onTouched();
   }
+
+  handleBlur(): void {
+    this.onTouched();
+  }
+
   writeValue(value: any): void {
     this.internalValue = value;
     const found = this.options.find(opt => opt.value === value);
     this.displayValue = found ? found.label : value || '';
-  }
-
-  get emptyOptionList(){
-    return !this.options || this.options.length === 0;
   }
 
   registerOnChange(fn: any): void { this.onChange = fn; }

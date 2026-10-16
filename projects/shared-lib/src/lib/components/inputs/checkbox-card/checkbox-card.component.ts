@@ -13,6 +13,7 @@ import { TranslateModule } from '@ngx-translate/core';
 export class CheckboxCardComponent extends BaseInput {
   @Input() labelOnRight: boolean = false;
   @Input() imgSrc: string = "";
+
   get isSelected(){
     let formControl = this.inputFormGroup.get(this.controlName);
     if(!formControl){

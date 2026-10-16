@@ -1,0 +1,19 @@
+@if (window(); as w) {
+  <div class="timer" [class.timer--urgent]="urgent()" [class.timer--expired]="expired()">
+    <p class="timer__readout" role="timer" aria-live="off">
+      <span class="timer__label">{{ label() | translate }}</span>
+      <span class="timer__seconds">{{ 'gameTimer.remainingSeconds' | translate: { seconds: remainingSeconds() } }}</span>
+    </p>
+    <!-- Hidden from assistive tech: the timer readout above already says how long is left. -->
+    <lib-timer-bar
+      class="gs-timer-bar"
+      aria-hidden="true"
+      [twoWay]="true"
+      [startDate]="w.start"
+      [endDate]="w.end"
+      [tickMs]="barTickMs"
+      barLength="100%"
+      barWidth="var(--gs-timer-bar-height, 0.8rem)"
+    ></lib-timer-bar>
+  </div>
+}

@@ -1,0 +1,25 @@
+<main class="create">
+  <h1>{{ gameTitleKey | translate }}</h1>
+  <p class="create__hint">
+    {{ 'create.hint' | translate }}
+  </p>
+
+  <form class="create__form" [formGroup]="formGroup" (ngSubmit)="createSession()">
+    <lib-text-input
+      [label]="'create.nameLabel'"
+      [placeholder]="'create.namePlaceholder'"
+      [inputFormGroup]="formGroup"
+      controlName="displayName"
+      [errorMessages]="errorMessages"
+      [ariaLabel]="'create.nameLabel'"
+    ></lib-text-input>
+
+    @if (errorMessage()) {
+      <p class="create__error" role="alert">{{ errorMessage() | translate }}</p>
+    }
+
+    <button type="submit" class="gs-btn gs-btn--primary" [disabled]="submitting()">
+      {{ (submitting() ? 'common.creating' : 'create.submitButton') | translate }}
+    </button>
+  </form>
+</main>

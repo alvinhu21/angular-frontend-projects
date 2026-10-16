@@ -1,0 +1,58 @@
+// Sized off the clue panel it sits in (a container), so it reads from across the room on the TV
+// and still fits a phone.
+.matchup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35em;
+  text-align: center;
+  animation: matchup-in 500ms var(--jp-ease) both;
+}
+
+.matchup__names {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.2em 0.5em;
+  font-family: var(--jp-font-display);
+  font-weight: 700;
+  font-size: clamp(1.5rem, 5cqi, 3.5rem);
+  line-height: 1.1;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.matchup__name {
+  color: var(--jp-text);
+  text-shadow: 0.05em 0.05em 0 var(--jp-line);
+  overflow-wrap: anywhere;
+}
+
+.matchup__vs {
+  font-size: 0.6em;
+  color: var(--jp-gold);
+  text-transform: lowercase;
+}
+
+.matchup__score {
+  margin: 0;
+  font-family: var(--jp-font-display);
+  font-size: clamp(1.1rem, 2.8cqi, 2rem);
+  color: var(--jp-gold);
+  letter-spacing: 0.04em;
+}
+
+@keyframes matchup-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .matchup {
+    animation: none;
+  }
+}

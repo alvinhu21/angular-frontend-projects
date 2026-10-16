@@ -1,0 +1,118 @@
+.scoreboard {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.scoreboard__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.6rem 0.9rem;
+  border-radius: var(--gs-radius-sm);
+  background: var(--gs-bg-panel-raised);
+  border: 1px solid var(--gs-border);
+}
+
+.scoreboard__row--turn {
+  border-color: var(--gs-cyan);
+  box-shadow: 0 0 0 1px var(--gs-cyan);
+}
+
+.scoreboard__row--me {
+  outline: 2px dashed var(--gs-magenta);
+  outline-offset: 2px;
+}
+
+.scoreboard__name {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 600;
+  flex-wrap: wrap;
+}
+
+.scoreboard__score {
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: var(--gs-yellow);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.scoreboard__round-score {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--gs-text-muted);
+}
+
+// The special wedges a contestant holds, displayed with their score as on the show.
+.scoreboard__tokens {
+  display: flex;
+  gap: 0.3rem;
+  margin-top: 0.2rem;
+}
+
+.scoreboard__token {
+  font-size: 0.65rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  padding: 0.12rem 0.45rem;
+  border-radius: 0.25rem;
+  white-space: nowrap;
+}
+
+// Dark card, gold rim - the Wild Card on the wheel.
+.scoreboard__token--wild {
+  background: #12131c;
+  color: var(--gs-yellow);
+  border: 1px solid var(--gs-yellow);
+}
+
+.scoreboard__token--million {
+  background: var(--gs-green);
+  color: var(--gs-ink);
+  border: 1px solid var(--gs-green);
+}
+
+// Picked up, but only kept by solving this round.
+.scoreboard__token--pending {
+  background: transparent;
+  color: var(--gs-green);
+  border-style: dashed;
+}
+
+.scoreboard__badge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  background: var(--gs-bg-panel);
+  color: var(--gs-text-muted);
+  border: 1px solid var(--gs-border);
+}
+
+.scoreboard__badge--turn {
+  background: var(--gs-cyan);
+  color: var(--gs-ink);
+  border-color: transparent;
+}
+
+.scoreboard__badge--offline {
+  background: var(--gs-red);
+  color: var(--gs-bg-void);
+  border-color: transparent;
+}
+
+.scoreboard__badge--ai {
+  background: var(--gs-magenta);
+  color: var(--gs-ink);
+  border-color: transparent;
+}

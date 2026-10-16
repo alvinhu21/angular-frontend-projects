@@ -1,0 +1,64 @@
+// Sizing hooks a parent can set on the element: --gs-timer-max-width, --gs-timer-bar-height,
+// --gs-timer-label-size, --gs-timer-seconds-size. The bar's own look lives in styles/_timer.scss.
+:host {
+  display: block;
+  width: min(100%, var(--gs-timer-max-width, 30rem));
+  margin-inline: auto;
+}
+
+.timer {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.timer__readout {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0;
+  font-weight: 800;
+  color: var(--gs-text-primary);
+}
+
+.timer__label {
+  font-size: var(--gs-timer-label-size, 0.85rem);
+  letter-spacing: 0.08em;
+  text-align: start;
+  text-transform: uppercase;
+}
+
+.timer__seconds {
+  display: inline-block;
+  font-size: var(--gs-timer-seconds-size, 1.35rem);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--gs-yellow);
+  text-shadow: 0 2px 0 rgb(0 0 0 / 0.5);
+}
+
+.timer--urgent .timer__seconds {
+  color: var(--gs-red);
+  animation: timer-pulse 0.6s ease-in-out infinite;
+}
+
+.timer--expired .timer__seconds {
+  color: var(--gs-text-muted);
+}
+
+@keyframes timer-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.08);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .timer--urgent .timer__seconds {
+    animation: none;
+  }
+}

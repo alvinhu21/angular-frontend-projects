@@ -1,0 +1,255 @@
+// Sizing: parents set --wof-wheel-size; the wheel never grows past its container.
+// Everything inside scales off the stage width (cqw), so the wheel reads the same at any size.
+:host {
+  --wheel-metal-dark: #1b1d29;
+  --wheel-metal-mid: #4a4f66;
+  --wheel-metal-light: #c9cee0;
+  --wheel-gold: #ffd23f;
+  --wheel-gold-deep: #c98a00;
+  --wheel-gold-light: #fff1b8;
+  --wheel-bulb: #fff4cf;
+  --wheel-font: 'Oswald', 'Arial Narrow', 'Roboto Condensed', Impact, sans-serif;
+
+  display: block;
+  width: 100%;
+  max-width: var(--wof-wheel-size, 30rem);
+  margin-inline: auto;
+}
+
+.wheel {
+  margin: 0;
+}
+
+.wheel__stage {
+  position: relative;
+  aspect-ratio: 1;
+  container-type: inline-size;
+  border-radius: 50%;
+  // Clips the turning face's square corners so they never create page overflow.
+  overflow: hidden;
+  box-shadow:
+    0 2.4cqw 5cqw rgb(0 0 0 / 0.55),
+    0 0 0 0.5cqw rgb(0 0 0 / 0.35);
+}
+
+.wheel__rim,
+.wheel__lights,
+.wheel__sheen,
+.wheel__hub {
+  position: absolute;
+  pointer-events: none;
+}
+
+// Brushed-metal outer ring - the static frame the wheel turns inside.
+.wheel__rim {
+  inset: 0;
+  border-radius: 50%;
+  background:
+    // A dark groove just outside the face edge (r ≈ 450 of 500).
+    radial-gradient(circle closest-side, transparent 89.5%, rgb(0 0 0 / 0.55) 90.5%, transparent 92.5%),
+    conic-gradient(
+      from 20deg,
+      var(--wheel-metal-mid),
+      var(--wheel-metal-light) 12%,
+      var(--wheel-metal-dark) 26%,
+      var(--wheel-metal-mid) 40%,
+      var(--wheel-metal-light) 55%,
+      var(--wheel-metal-dark) 70%,
+      var(--wheel-metal-light) 86%,
+      var(--wheel-metal-mid)
+    );
+  box-shadow:
+    inset 0 0.8cqw 1.2cqw rgb(255 255 255 / 0.35),
+    inset 0 -1cqw 1.6cqw rgb(0 0 0 / 0.55);
+}
+
+.wheel__lights {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.wheel__bulb {
+  fill: var(--wheel-bulb);
+  stroke: var(--wheel-gold-deep);
+  stroke-width: 2;
+}
+
+// fill-opacity, not opacity, so the chase/flash animations (which drive opacity) scale it.
+.wheel__bulb-glow {
+  fill: var(--wheel-gold);
+  fill-opacity: 0.35;
+}
+
+// While the wheel turns, a light chases around the rim; at rest they all burn steady.
+.wheel--moving {
+  .wheel__bulb,
+  .wheel__bulb-glow {
+    animation: bulb-chase 1.2s linear infinite;
+  }
+}
+
+// A quick triple flash to punctuate the landing.
+.wheel--landed {
+  .wheel__bulb,
+  .wheel__bulb-glow {
+    animation: bulb-flash 0.36s ease-in-out 3;
+  }
+}
+
+.wheel__rotor {
+  position: absolute;
+  inset: 5.5%;
+  width: 89%;
+  height: 89%;
+  transform-origin: 50% 50%;
+  overflow: visible;
+}
+
+// Promote the face to its own layer only while it moves, so it's crisp again at rest.
+.wheel--moving .wheel__rotor {
+  will-change: transform;
+}
+
+.wheel__wedge {
+  stroke: rgb(0 0 0 / 0.25);
+  stroke-width: 1;
+}
+
+.wheel__label text {
+  font-family: var(--wheel-font);
+  font-weight: 700;
+  text-anchor: middle;
+  dominant-baseline: central;
+  paint-order: stroke;
+  stroke: rgb(0 0 0 / 0.18);
+  stroke-width: 1.5;
+}
+
+// The Wild Card's playing card, laid over the outer part of its wedge.
+.wheel__card {
+  fill: #12131c;
+  stroke: var(--wheel-gold);
+  stroke-width: 3;
+}
+
+// Fixed SVG paint (pegs, dividers, hub star, flapper facets) lives as attributes in the template.
+
+// Lacquer: a fixed highlight and edge falloff laid over the turning face, so the gloss stays put
+// while the wedges run underneath it.
+.wheel__sheen {
+  inset: 5.5%;
+  border-radius: 50%;
+  background:
+    radial-gradient(ellipse 58% 36% at 34% 20%, rgb(255 255 255 / 0.3), rgb(255 255 255 / 0) 72%),
+    radial-gradient(
+      circle closest-side,
+      rgb(255 255 255 / 0.08) 0 24%,
+      rgb(255 255 255 / 0) 48%,
+      rgb(0 0 0 / 0) 72%,
+      rgb(0 0 0 / 0.32) 100%
+    );
+}
+
+.wheel__hub {
+  inset: 40.4%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 36% 30%, var(--wheel-gold-light), var(--wheel-gold) 30%, var(--wheel-gold-deep) 66%, #7a4e00);
+  box-shadow:
+    0 0 0 0.9cqw var(--wheel-metal-dark),
+    0 0 0 1.3cqw var(--wheel-gold-deep),
+    0 1.2cqw 2cqw rgb(0 0 0 / 0.5),
+    inset 0 -0.8cqw 1.2cqw rgb(0 0 0 / 0.35);
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+// Pivot at (40, 16) of an 80x100 box = 50% / 16%. It spans x 460-540, y 0-100 of the stage.
+.wheel__flapper {
+  position: absolute;
+  top: 0;
+  left: 46%;
+  width: 8%;
+  height: 10%;
+  transform-origin: 50% 16%;
+  filter: drop-shadow(0 0.5cqw 0.5cqw rgb(0 0 0 / 0.55));
+  pointer-events: none;
+}
+
+// The landed value as a broadcast banner, in the wedge's own colours.
+.wheel__callout-slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(var(--wof-wheel-callout-size, 2rem) * 1.9);
+  margin-top: 0.75rem;
+}
+
+.wheel__callout {
+  display: inline-block;
+  padding: 0.15em 0.9em;
+  border: 3px solid var(--wheel-gold);
+  border-radius: 0.3rem;
+  font-family: var(--wheel-font);
+  font-size: var(--wof-wheel-callout-size, 2rem);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  box-shadow:
+    inset 0 2px 0 rgb(255 255 255 / 0.35),
+    inset 0 -3px 0 rgb(0 0 0 / 0.3),
+    0 0 1.2rem rgb(255 210 63 / 0.35);
+  animation: callout-in 320ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.wheel__callout--bankrupt {
+  border-color: #ff4c4c;
+  box-shadow:
+    inset 0 2px 0 rgb(255 255 255 / 0.2),
+    0 0 1.2rem rgb(255 76 76 / 0.45);
+}
+
+// The Wild Card / Million Dollar Wedge: a brighter gold halo than an ordinary value.
+.wheel__callout--special {
+  box-shadow:
+    inset 0 2px 0 rgb(255 255 255 / 0.35),
+    0 0 0 2px #fff1b8,
+    0 0 1.8rem rgb(255 210 63 / 0.7);
+}
+
+@keyframes bulb-chase {
+  45% {
+    opacity: 0.2;
+  }
+}
+
+@keyframes bulb-flash {
+  50% {
+    opacity: 0.15;
+  }
+}
+
+@keyframes callout-in {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wheel--moving,
+  .wheel--landed {
+    .wheel__bulb,
+    .wheel__bulb-glow {
+      animation: none;
+    }
+  }
+
+  .wheel__callout {
+    animation: none;
+  }
+}

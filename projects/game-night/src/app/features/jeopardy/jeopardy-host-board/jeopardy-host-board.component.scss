@@ -1,0 +1,165 @@
+// Full-viewport TV layout: broadcast bar, the board as the dominant middle band, podiums below.
+.stage {
+  display: grid;
+  grid-template-rows: auto minmax(22rem, 1fr) auto;
+  gap: clamp(0.75rem, 2vh, 1.5rem);
+  min-height: 100dvh;
+  max-width: 120rem;
+  margin: 0 auto;
+  padding: clamp(0.75rem, 2vw, 2rem);
+}
+
+// On a TV-shaped screen everything fits one viewport, so the podiums never scroll out of sight;
+// the board takes whatever height is left.
+@media (min-aspect-ratio: 4/3) and (min-height: 36rem) {
+  .stage {
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    height: 100dvh;
+  }
+}
+
+.stage__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 2px solid rgb(255 203 61 / 0.5);
+}
+
+.stage__round {
+  margin: 0;
+  font-family: var(--jp-font-display);
+  font-weight: 700;
+  font-size: clamp(1.5rem, 3.2vw, 3rem);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--jp-gold);
+  text-shadow: 0.05em 0.05em 0 var(--jp-line);
+}
+
+.stage__control {
+  flex: 1;
+  margin: 0;
+  font-size: clamp(1.1rem, 1.8vw, 1.6rem);
+  font-weight: 600;
+  color: var(--jp-text-dim);
+}
+
+.stage__screen {
+  // The board fills in as the round title card clears (ROUND_CARD_MS in the component).
+  --cascade-start: 1.6s;
+
+  position: relative;
+  display: grid;
+  container-type: inline-size;
+}
+
+// Covers the board exactly, so the board -> clue change reads as one screen transforming.
+.stage__clue {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: auto;
+}
+
+.stage__clue-text {
+  font-size: clamp(1.6rem, min(4.4cqi, 6.5vh), 4.2rem);
+  text-transform: uppercase;
+  transition: font-size 300ms var(--jp-ease);
+}
+
+// The clue steps back so the correct response beneath it can lead, and both fit the board area.
+.stage__clue--revealed .stage__clue-text {
+  font-size: clamp(1.25rem, min(3.2cqi, 4.6vh), 3rem);
+}
+
+// Sized for the room, in the board's display face.
+.stage__timer {
+  --gs-timer-max-width: 42rem;
+  --gs-timer-bar-height: clamp(0.8rem, 1.6cqi, 1.3rem);
+  --gs-timer-label-size: clamp(0.95rem, 1.8cqi, 1.3rem);
+  --gs-timer-seconds-size: clamp(1.5rem, 3cqi, 2.4rem);
+
+  font-family: var(--jp-font-display);
+}
+
+.stage__final {
+  min-height: 100%;
+  overflow: auto;
+}
+
+.stage__final-category {
+  margin: 0;
+  font-family: var(--jp-font-display);
+  font-weight: 700;
+  font-size: clamp(2.25rem, 7cqi, 6rem);
+  line-height: 1.05;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-wrap: balance;
+  text-shadow: 0.05em 0.05em 0 var(--jp-line);
+}
+
+.stage__game-over {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  align-self: start;
+  width: min(100%, 48rem);
+  max-height: 100%;
+  overflow: auto;
+  justify-self: center;
+  font-size: 1.15rem;
+
+  app-game-over-panel {
+    width: 100%;
+  }
+}
+
+.stage__results-link {
+  text-decoration: none;
+}
+
+.stage__round-card {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(ellipse at center, rgb(20 48 160 / 0.96), rgb(3 8 38 / 0.98) 75%);
+
+  span {
+    font-family: var(--jp-font-display);
+    font-weight: 700;
+    font-size: clamp(2.5rem, 9cqi, 8rem);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    text-align: center;
+    color: var(--jp-gold);
+    text-shadow: 0.05em 0.05em 0 var(--jp-line), 0 0 0.5em rgb(255 203 61 / 0.4);
+    animation: round-title-in 900ms var(--jp-ease) both;
+  }
+}
+
+.stage__waiting {
+  margin: 0;
+  padding: 30vh 1rem 0;
+  text-align: center;
+  font-size: 1.5rem;
+  color: var(--jp-text-dim);
+}
+
+@keyframes round-title-in {
+  from {
+    opacity: 0;
+    transform: scale(1.25);
+    letter-spacing: 0.3em;
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

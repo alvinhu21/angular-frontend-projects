@@ -1,26 +1,6 @@
 .combobox-container {
-  display: inline-block;
+  display: block;
   width: 100%;
-
-  .combobox-input {
-    width: 100%;
-    padding: 8px 12px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 1rem;
-    outline: none;
-    transition: border-color 0.2s;
-
-    &:focus {
-      border-color: #007bff;
-      box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
-    }
-
-    &:disabled {
-      background-color: #e9ecef;
-      cursor: not-allowed;
-    }
-  }
 }
 
 .type-select-wrapper {
@@ -29,32 +9,77 @@
   width: 100%;
 
   .type-select-input {
-    padding-right: 2.5rem; // Space for the arrow
+    padding-right: 3.5rem;
     cursor: pointer;
+    background-color: #ffffff;
+    border: 1px solid #b7bfd6;
+    border-radius: 0.75rem;
+    color: #111827;
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 
-    // Hides the default browser arrow in Chrome/Edge/Safari
     &::-webkit-calendar-picker-indicator {
       display: none !important;
     }
+
+    &:focus,
+    &:focus-visible {
+      background-color: #ffffff;
+      border-color: #1d4ed8;
+      box-shadow: 0 0 0 0.25rem rgba(29, 78, 216, 0.2);
+      outline: 0;
+    }
+
+    &:disabled {
+      background-color: #f8fafc;
+      opacity: 1;
+      cursor: not-allowed;
+      color: #475569;
+    }
   }
 
-  // Custom CSS Arrow
+  .clear-btn {
+    position: absolute;
+    top: 50%;
+    right: 2.3rem;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    font-size: 1.25rem;
+    line-height: 1;
+    color: #334155;
+    padding: 0.1rem 0.3rem;
+    cursor: pointer;
+    z-index: 3;
+    opacity: 0.75;
+    transition: opacity 0.15s ease, color 0.15s ease;
+
+    &:hover,
+    &:focus-visible {
+      opacity: 1;
+      color: #0f172a;
+      outline: 2px solid rgba(29, 78, 216, 0.25);
+      border-radius: 0.25rem;
+    }
+  }
+
   .select-arrow {
     position: absolute;
     top: 50%;
-    right: 1rem;
+    right: 1.1rem;
     transform: translateY(-50%);
     width: 0;
     height: 0;
-    pointer-events: none; // Allows clicks to pass through to the input
+    pointer-events: none;
     border-left: 5px solid transparent;
     border-right: 5px solid transparent;
-    border-top: 5px solid #6c757d; // The color of the arrow
-    transition: transform 0.2s ease;
+    border-top: 5px solid #334155;
+    transition: transform 0.25s ease, border-top-color 0.2s ease;
+    z-index: 2;
   }
 
-  // Optional: Flip the arrow when focused
-  .type-select-input:focus + .select-arrow {
+  .type-select-input:focus ~ .select-arrow,
+  .type-select-input:focus-visible ~ .select-arrow {
     transform: translateY(-50%) rotate(180deg);
+    border-top-color: #1d4ed8;
   }
 }

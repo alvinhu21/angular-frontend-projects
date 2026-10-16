@@ -1,0 +1,42 @@
+<ul class="podiums" [class.podiums--compact]="compact" role="list" [attr.aria-label]="'scoreboard.ariaLabel' | translate">
+  @for (player of players; track player.playerId) {
+    <li
+      class="podium"
+      [class.podium--control]="player.playerId === inControlId"
+      [class.podium--answering]="player.playerId === answeringId"
+      [class.podium--me]="player.playerId === myPlayerId"
+      [class.podium--offline]="!player.connected"
+    >
+      <span class="podium__light" aria-hidden="true"></span>
+      <span class="podium__score" [class.podium__score--negative]="player.score < 0">
+        {{ player.score | jpMoney }}
+        @for (flash of flashesFor(player.playerId); track flash.seq) {
+          <span
+            class="podium__delta"
+            [class.podium__delta--up]="flash.delta > 0"
+            [class.podium__delta--down]="flash.delta < 0"
+            aria-hidden="true"
+          >{{ flash.delta > 0 ? '+' : '' }}{{ flash.delta | jpMoney }}</span>
+        }
+      </span>
+      <span class="podium__plate">
+        <span class="podium__name">{{ player.displayName }}</span>
+        @if (player.playerId === myPlayerId) {
+          <span class="podium__tag">{{ 'jeopardy.youBadge' | translate }}</span>
+        }
+        @if (player.ai) {
+          <span class="podium__tag" [attr.title]="'scoreboard.aiAriaLabel' | translate">{{ 'jeopardy.aiBadge' | translate }}</span>
+        }
+        @if (!player.connected) {
+          <span class="podium__tag podium__tag--offline">{{ 'scoreboard.offlineBadge' | translate }}</span>
+        }
+      </span>
+      @if (player.playerId === inControlId) {
+        <span class="visually-hidden">{{ 'jeopardy.inControlBadge' | translate }}</span>
+      }
+      @if (player.playerId === answeringId) {
+        <span class="visually-hidden">{{ 'jeopardy.answeringBadge' | translate }}</span>
+      }
+    </li>
+  }
+</ul>

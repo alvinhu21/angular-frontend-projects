@@ -1,0 +1,24 @@
+// Themed through the shared --gs-* tokens; the Jeopardy stage remaps them to its navy and gold.
+.sound-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  color: var(--gs-text-muted);
+  background: var(--gs-bg-panel);
+  border: 2px solid var(--gs-border);
+  border-radius: var(--gs-radius-sm);
+  cursor: pointer;
+  transition: color 150ms ease, border-color 150ms ease;
+
+  &:hover {
+    color: var(--gs-text-primary);
+  }
+
+  &[aria-pressed='true'] {
+    color: var(--gs-yellow);
+    border-color: var(--gs-yellow);
+  }
+}

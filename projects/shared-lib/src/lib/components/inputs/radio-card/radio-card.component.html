@@ -1,20 +1,45 @@
-<div [formGroup]="inputFormGroup">
-    <ng-content *ngFor="let option of valueOptions">
-        <div role="button" (click)="selectValue(option)" [ngClass]="{'flex-column mb-2': !isHorizontal, 'flex-row align-items-center': isHorizontal, 'border': isSelected(option)}" class="d-flex card">
-            <label *ngIf="!labelOnRight" class="form-check-label me-1" [for]="id">
-                <span *ngIf="!faIcon">{{option.label | translate}}</span>
+<div [formGroup]="inputFormGroup" [ngClass]="customClasses" class="field-shell">
+    <div *ngFor="let option of valueOptions" class="mb-2">
+        <div
+            role="button"
+            tabindex="0"
+            (click)="selectValue(option)"
+            (keydown.enter)="selectValue(option)"
+            (keydown.space)="selectValue(option)"
+            [ngClass]="{'flex-column': !isHorizontal, 'flex-row align-items-center': isHorizontal, 'border border-primary-subtle': isSelected(option)}"
+            class="d-flex card p-3 align-items-center shadow-sm"
+        >
+            <label *ngIf="!labelOnRight" class="form-check-label me-2" [for]="id + '-' + option.value">
+                <span *ngIf="!faIcon">{{ option.label | translate }}</span>
                 <i aria-hidden="true" *ngIf="faIcon" class="fa" [ngClass]="faIcon"></i>
-                <img *ngIf="option.imgSrc" [src]="option.imgSrc" />
+                <img *ngIf="option.imgSrc" [src]="option.imgSrc" alt="" class="img-fluid rounded" />
             </label>
-            <input name="{{controlName}}" [disabled]="disabled" class="form-radio-input" [id]="id" type="radio" [formControlName]="controlName" [value]="option.value"/>
-            <label *ngIf="labelOnRight" class="form-check-label ms-1" [for]="id">
-                <span *ngIf="!faIcon">{{option.label | translate}}</span>
+            <input
+                name="{{ controlName }}"
+                [disabled]="disabled"
+                class="form-check-input"
+                [id]="id + '-' + option.value"
+                type="radio"
+                [formControlName]="controlName"
+                [value]="option.value"
+                [attr.aria-label]="ariaLabel || option.label || 'Radio option'"
+                [attr.aria-describedby]="describedByIds"
+            />
+            <label *ngIf="labelOnRight" class="form-check-label ms-2" [for]="id + '-' + option.value">
+                <span *ngIf="!faIcon">{{ option.label | translate }}</span>
                 <i aria-hidden="true" *ngIf="faIcon" class="fa" [ngClass]="faIcon"></i>
-                <img *ngIf="option.imgSrc" [src]="option.imgSrc" />
+                <img *ngIf="option.imgSrc" [src]="option.imgSrc" alt="" class="img-fluid rounded" />
             </label>
         </div>
-    </ng-content>
-</div>
-<div class="text-danger" *ngFor="let message of errorMessageList">
-    {{message | translate}}
+    </div>
+
+    <small *ngIf="helpText" class="form-text text-body-secondary" [id]="id + '-help'">
+        {{ helpText | translate }}
+    </small>
+
+    <div *ngIf="errorMessageList.length" class="invalid-feedback d-block" [id]="id + '-errors'">
+        <div *ngFor="let message of errorMessageList">
+            {{ message | translate }}
+        </div>
+    </div>
 </div>

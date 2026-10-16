@@ -1,0 +1,44 @@
+<div
+  class="puzzle-frame"
+  [class.puzzle-frame--correct]="flash === 'correct'"
+  [class.puzzle-frame--wrong]="flash === 'wrong'"
+  [class.puzzle-frame--alert]="alert"
+>
+  <div class="puzzle-layout">
+    <div class="puzzle-rows" role="group" [attr.aria-label]="'wof.puzzleBoardAriaLabel' | translate">
+      @for (row of rows(); track $index) {
+        <div class="puzzle-row">
+          @for (cell of row; track $index) {
+            @let cellType = cellKind(cell);
+            @let text = cellText(cell);
+            <div
+              class="cell"
+              [class.cell--empty]="cellType === 'empty'"
+              [class.cell--hidden]="cellType === 'hidden'"
+              [class.cell--filled]="cellType === 'filled'"
+            >
+              @if (solving && cellType === 'hidden' && cell.templateIndex !== null) {
+                <input
+                  #letterInput
+                  class="cell__input"
+                  maxlength="1"
+                  inputmode="text"
+                  autocomplete="off"
+                  [attr.aria-label]="'wof.puzzleLetterAriaLabel' | translate"
+                  [formControl]="controlFor(cell.templateIndex)"
+                  (input)="onLetterInput(cell.templateIndex)"
+                  (keydown.backspace)="onLetterBackspace(cell.templateIndex)"
+                />
+              } @else {
+                {{ text }}
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+    @if (category) {
+      <p class="category"><span class="visually-hidden">{{ 'wof.categoryLabel' | translate }}</span> {{ category }}</p>
+    }
+  </div>
+</div>

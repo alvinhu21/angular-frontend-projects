@@ -1,0 +1,237 @@
+<main class="board">
+  @if (liveSession.wofState(); as state) {
+    <header class="board__header">
+      <app-sound-toggle class="board__sound"></app-sound-toggle>
+      @if (isFrenzy() || isFrenzyPuzzleOver()) {
+        <p class="board__round board__round--tossup">{{ 'wof.frenzyRoundLabel' | translate }}</p>
+      } @else if (isTripleTossUp()) {
+        <p class="board__round board__round--tossup">
+          {{ 'wof.tripleTossUpRoundLabel' | translate: { number: tripleTossUpPuzzleNumber() } }}
+        </p>
+      } @else if (isFinalSpin()) {
+        <p class="board__round board__round--speedup">{{ 'wof.finalSpinRoundLabel' | translate }}</p>
+        <p class="board__category">{{ 'wof.finalSpinCategory' | translate }}</p>
+      } @else if (isSpeedupRound()) {
+        <p class="board__round board__round--speedup">{{ 'wof.speedupRoundLabel' | translate }}</p>
+        <p class="board__category">{{ 'wof.speedupCategory' | translate: { value: state.speedupLetterValue } }}</p>
+      } @else if (showsBonusPuzzle()) {
+        <p class="board__round board__round--bonus">{{ 'wof.bonusRoundLabel' | translate }}</p>
+        <!-- Once picked, the category shows in the strip under the board instead. -->
+        @if (!state.bonusCategory) {
+          <p class="board__category">{{ 'wof.bonusCategoryPick' | translate: { name: bonusWinnerName() } }}</p>
+        }
+      } @else {
+        <p class="board__round">
+          @if (state.totalRounds) {
+            {{ 'wof.roundOf' | translate: { round: state.roundNumber, total: state.totalRounds } }}
+          } @else {
+            {{ 'wof.round' | translate: { round: state.roundNumber } }}
+          }
+        </p>
+      }
+    </header>
+
+    @if (showGameClock()) {
+      <div class="board__countdown-wrap">
+        <app-game-timer
+          class="board__timer"
+          [startsAt]="state.gameClockStartedAt"
+          [endsAt]="state.gameClockEndsAt"
+          label="wof.finalSpinIn"
+        ></app-game-timer>
+      </div>
+    }
+
+    @if (isTripleTossUp() && puzzleLockedOutNames().length > 0) {
+      <p class="board__locked-out" role="status">
+        {{ 'wof.alreadyAnswered' | translate: { names: puzzleLockedOutNames().join(', ') } }}
+      </p>
+    }
+
+    @if (isFrenzy() && frenzySolverName()) {
+      <div class="board__countdown-wrap">
+        <app-game-timer
+          class="board__timer"
+          [startsAt]="state.frenzySolveStartedAt"
+          [endsAt]="state.frenzySolveDeadlineAt"
+          label="wof.answeringNow"
+        ></app-game-timer>
+        <p class="board__solving-note">{{ 'wof.playerRangIn' | translate: { name: frenzySolverName() } }}</p>
+      </div>
+    }
+
+    @if (state.wildCardInPlay) {
+      <p class="board__wild-card" role="status">
+        {{ 'wof.wildCardInPlay' | translate: { name: currentPlayerName(), amount: (state.lastSpinResult?.value | number) } }}
+      </p>
+    }
+
+    @if (isTripleTossUp() && tripleTossUpSolverName()) {
+      <div class="board__countdown-wrap">
+        <app-game-timer
+          class="board__timer"
+          [startsAt]="state.tripleTossUpSolveStartedAt"
+          [endsAt]="state.tripleTossUpSolveDeadlineAt"
+          label="wof.answeringNow"
+        ></app-game-timer>
+        <p class="board__solving-note">{{ 'wof.playerIsAnswering' | translate: { name: tripleTossUpSolverName() } }}</p>
+      </div>
+    }
+
+    @if (state.phase === 'AWAITING_SOLVE') {
+      <div class="board__countdown-wrap">
+        <app-game-timer
+          class="board__timer"
+          [startsAt]="state.solveStartedAt"
+          [endsAt]="state.solveDeadlineAt"
+          label="wof.solveNow"
+        ></app-game-timer>
+        <p class="board__solving-note">{{ 'wof.playerIsSolving' | translate: { name: solvingPlayerName() } }}</p>
+      </div>
+    }
+
+    @if (showsBonusPuzzle()) {
+      @if (state.bonusMillionInPlay || bonusHasWildCard()) {
+        <ul class="board__bonus-extras" role="status">
+          @if (state.bonusMillionInPlay) {
+            <li class="board__bonus-extra board__bonus-extra--million">{{ 'wof.bonusMillionInPlay' | translate }}</li>
+          }
+          @if (bonusHasWildCard()) {
+            <li class="board__bonus-extra">{{ 'wof.bonusWildCardInPlay' | translate: { name: bonusWinnerName() } }}</li>
+          }
+        </ul>
+      }
+      @if (state.bonusPuzzleTemplate) {
+        <app-puzzle-board [template]="state.bonusPuzzleTemplate" [category]="state.bonusCategory"></app-puzzle-board>
+      } @else {
+        <!-- The three choices go up on the big screen, as on the show, so the room watches the pick. -->
+        <section class="board__bonus-pick" aria-labelledby="bonus-pick-heading">
+          <h2 id="bonus-pick-heading" class="board__bonus-pick-heading">
+            {{ 'wof.choosingCategory' | translate: { name: bonusWinnerName() } }}
+          </h2>
+          @if (state.bonusCategoryOptions; as options) {
+            <ol class="board__bonus-categories">
+              @for (category of options; track category) {
+                <li class="board__bonus-category">{{ category }}</li>
+              }
+            </ol>
+          }
+        </section>
+      }
+      @if (state.phase === 'BONUS_SOLVE') {
+        <div class="board__countdown-wrap">
+          <app-game-timer
+            class="board__timer"
+            [startsAt]="bonusSolveWindow()?.startsAt"
+            [endsAt]="bonusSolveWindow()?.endsAt"
+            label="wof.solveNow"
+          ></app-game-timer>
+        </div>
+      }
+    } @else if (isFrenzy() || isFrenzyPuzzleOver()) {
+      <!-- The Frenzy clock sits in the board's upper-left corner. -->
+      <div class="board__frenzy">
+        <div class="board__frenzy-bar">
+          <app-frenzy-clock
+            class="board__frenzy-clock"
+            [remainingMs]="frenzyCountdown.remainingMs()"
+            [urgent]="frenzyCountdown.finalSeconds()"
+          ></app-frenzy-clock>
+          @if (state.frenzyPuzzleNumber) {
+            <p class="board__frenzy-count">{{ 'wof.frenzyPuzzleNumber' | translate: { number: state.frenzyPuzzleNumber } }}</p>
+          }
+        </div>
+        <app-puzzle-board
+          [template]="state.puzzleTemplate"
+          [category]="state.category"
+          [flash]="frenzyFlash()"
+          [alert]="frenzyCountdown.finalSeconds()"
+        ></app-puzzle-board>
+      </div>
+    } @else {
+      <app-puzzle-board [template]="state.puzzleTemplate" [category]="state.category"></app-puzzle-board>
+    }
+
+    @if (state.phase === 'SPEEDUP_AWAITING_SOLVE') {
+      <div class="board__countdown-wrap">
+        <app-game-timer
+          class="board__timer"
+          [startsAt]="speedupSolveWindow()?.startsAt"
+          [endsAt]="speedupSolveWindow()?.endsAt"
+          label="wof.solveNow"
+        ></app-game-timer>
+        <p class="board__solving-note">{{ 'wof.racingTheClock' | translate: { name: currentPlayerName() } }}</p>
+      </div>
+    }
+
+    @if (state.phase === 'ROUND_OVER') {
+      <p class="board__round-over" role="status">{{ 'wof.roundComplete' | translate }}</p>
+    }
+
+    @if (isFrenzyPuzzleOver()) {
+      <p class="board__frenzy-result" [class.board__frenzy-result--good]="state.frenzyOutcome === 'SOLVED'" role="status">
+        @switch (state.frenzyOutcome) {
+          @case ('SOLVED') {
+            {{ 'wof.frenzySolvedBy' | translate: { name: frenzyOutcomeName() } }}
+          }
+          @case ('MISSED') {
+            {{ 'wof.frenzyMissedBy' | translate: { name: frenzyOutcomeName() } }}
+          }
+          @default {
+            {{ 'wof.frenzyUnsolved' | translate }}
+          }
+        }
+      </p>
+      @if (isFrenzyOver()) {
+        <p class="board__round-over">
+          {{ 'wof.frenzyOverStarter' | translate: { name: frenzyStarterName() } }}
+          {{ 'wof.continuePrompt' | translate }}
+        </p>
+      } @else {
+        <p class="board__solving-note board__frenzy-next">{{ 'wof.frenzyNextPuzzle' | translate }}</p>
+      }
+    }
+
+    @if (state.phase === 'GAME_OVER' && state.bonusSolved !== null) {
+      <p class="board__bonus-result" [class.board__bonus-result--win]="state.bonusSolved" role="status">
+        @if (state.bonusSolved && state.bonusPrizeAmount === 1000000) {
+          {{ 'wof.bonusWonMillionMessage' | translate: { name: bonusWinnerName() } }}
+        } @else if (state.bonusSolved) {
+          {{ 'wof.bonusWonMessage' | translate: { name: bonusWinnerName(), amount: state.bonusPrizeAmount } }}
+        } @else {
+          {{ 'wof.bonusLostMessage' | translate: { name: bonusWinnerName(), amount: state.bonusPrizeAmount } }}
+        }
+      </p>
+    }
+
+    <!-- Wheel and scoreboard side by side when there's room, stacked otherwise. -->
+    <div class="board__deck">
+      @if (isNormalRoundPhase() || isFinalSpin()) {
+        <app-wof-wheel
+          class="board__wheel"
+          [wedges]="state.wheel"
+          [spin]="state.wheelSpin"
+          [landedWedge]="state.lastSpinResult"
+        ></app-wof-wheel>
+      }
+
+      <section class="gs-panel board__scores" aria-labelledby="scores-heading">
+        <h2 id="scores-heading">{{ 'common.scoreboard' | translate }}</h2>
+        <app-scoreboard
+          [players]="state.players"
+          [currentPlayerId]="scoreboardHighlightPlayerId()"
+          [roundScores]="state.roundScores"
+          [wildCardHolderId]="state.wildCardHolderId"
+          [millionWedgeHolderId]="state.millionWedgeHolderId"
+          [millionWedgeSecured]="state.millionWedgeSecured"
+        ></app-scoreboard>
+      </section>
+    </div>
+
+    @if (state.phase === 'GAME_OVER' && state.gameWinnerPlayerIds) {
+      <app-game-over-panel [players]="state.players" [winnerPlayerIds]="state.gameWinnerPlayerIds"></app-game-over-panel>
+    }
+  } @else {
+    <p class="board__waiting">{{ 'common.waitingForGame' | translate }}</p>
+  }
+</main>

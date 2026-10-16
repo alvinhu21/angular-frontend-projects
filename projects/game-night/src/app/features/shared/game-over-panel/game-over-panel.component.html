@@ -1,0 +1,46 @@
+<div class="game-over" role="region" [attr.aria-label]="'gameOver.ariaLabel' | translate">
+  <p class="game-over__banner">
+    @if (winners().length === 1) {
+      {{ 'gameOver.winnerBanner' | translate: { name: winners()[0].displayName } }}
+    } @else {
+      {{ 'gameOver.tieBanner' | translate: { count: winners().length } }}
+    }
+  </p>
+
+  <ol class="game-over__ranking">
+    @for (player of ranked(); track player.playerId; let i = $index) {
+      <li class="game-over__row" [class.game-over__row--winner]="isWinner(player.playerId)">
+        <span class="game-over__place">#{{ i + 1 }}</span>
+        <span class="game-over__name">{{ player.displayName }}</span>
+        <span class="game-over__score">{{ player.score | number }}</span>
+      </li>
+    }
+  </ol>
+
+  @if (finalResults && finalResults.length) {
+    <table class="game-over__final-table">
+      <caption>{{ 'gameOver.finalJeopardyCaption' | translate }}</caption>
+      <thead>
+        <tr>
+          <th scope="col">{{ 'gameOver.playerColumn' | translate }}</th>
+          <th scope="col">{{ 'gameOver.wagerColumn' | translate }}</th>
+          <th scope="col">{{ 'gameOver.answerColumn' | translate }}</th>
+          <th scope="col">{{ 'gameOver.resultColumn' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (entry of finalResults; track entry.playerId) {
+          <tr>
+            <th scope="row">{{ entry.displayName }}</th>
+            <td>{{ entry.wager | number }}</td>
+            <td>{{ entry.answerText || ('gameOver.noAnswer' | translate) }}</td>
+            <td [class.game-over__correct]="entry.correct" [class.game-over__incorrect]="!entry.correct">
+              {{ (entry.correct ? 'gameOver.correct' : 'gameOver.incorrect') | translate }}
+              ({{ entry.scoreDelta > 0 ? '+' : '' }}{{ entry.scoreDelta | number }})
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

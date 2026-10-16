@@ -1,16 +1,42 @@
-<div [formGroup]="inputFormGroup" role="button" (click)="selectValue()" [ngClass]="{'flex-column mb-2': !isHorizontal, 'flex-row': isHorizontal, 'border': isSelected}" class="d-flex card">
-    <label *ngIf="!labelOnRight" class="form-check-label me-1" [for]="id">
-        <span *ngIf="!faIcon">{{label | translate}}</span>
-        <i aria-hidden="true" *ngIf="faIcon" class="fa" [ngClass]="faIcon"></i>
-        <img *ngIf="imgSrc" [src]="imgSrc" />
-    </label>
-    <input class="form-check-input" [id]="id" type="checkbox" [disabled]="disabled" [formControlName]="controlName"/>
-    <label *ngIf="labelOnRight" class="form-check-label ms-1" [for]="id">
-        <span *ngIf="!faIcon">{{label | translate}}</span>
-        <i aria-hidden="true" *ngIf="faIcon" class="fa" [ngClass]="faIcon"></i>
-        <img *ngIf="imgSrc" [src]="imgSrc" />
-    </label>
-</div>
-<div class="text-danger" *ngFor="let message of errorMessageList">
-    {{message | translate}}
+<div [ngClass]="customClasses" class="field-shell">
+    <div
+        [formGroup]="inputFormGroup"
+        role="button"
+        tabindex="0"
+        (click)="selectValue()"
+        (keydown.enter)="selectValue()"
+        (keydown.space)="selectValue()"
+        [ngClass]="{'flex-column mb-2': !isHorizontal, 'flex-row align-items-center': isHorizontal, 'border border-primary-subtle': isSelected}"
+        class="d-flex card p-3 align-items-center shadow-sm"
+    >
+        <label *ngIf="!labelOnRight" class="form-check-label me-2" [for]="id">
+            <span *ngIf="!faIcon">{{ label | translate }}</span>
+            <i aria-hidden="true" *ngIf="faIcon" class="fa" [ngClass]="faIcon"></i>
+            <img *ngIf="imgSrc" [src]="imgSrc" alt="" class="img-fluid rounded" />
+        </label>
+        <input
+            class="form-check-input"
+            [id]="id"
+            type="checkbox"
+            [disabled]="disabled"
+            [formControlName]="controlName"
+            [attr.aria-label]="ariaLabel || label || 'Checkbox option'"
+            [attr.aria-describedby]="describedByIds"
+        />
+        <label *ngIf="labelOnRight" class="form-check-label ms-2" [for]="id">
+            <span *ngIf="!faIcon">{{ label | translate }}</span>
+            <i aria-hidden="true" *ngIf="faIcon" class="fa" [ngClass]="faIcon"></i>
+            <img *ngIf="imgSrc" [src]="imgSrc" alt="" class="img-fluid rounded" />
+        </label>
+    </div>
+
+    <small *ngIf="helpText" class="form-text text-body-secondary" [id]="id + '-help'">
+        {{ helpText | translate }}
+    </small>
+
+    <div *ngIf="errorMessageList.length" class="invalid-feedback d-block" [id]="id + '-errors'">
+        <div *ngFor="let message of errorMessageList">
+            {{ message | translate }}
+        </div>
+    </div>
 </div>

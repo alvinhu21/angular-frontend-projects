@@ -1,0 +1,14 @@
+@if (windowItems.length) {
+  <div class="reel" [class.reel--spinning]="spinning()" role="status" [attr.aria-label]="'wof.wheelResultAriaLabel' | translate">
+    @for (item of windowItems; track item.offset) {
+      <div
+        class="reel__wedge"
+        [class.reel__wedge--landed]="item.offset === 0"
+        [style.background]="item.wedge.backgroundColor"
+        [style.color]="item.wedge.textColor"
+      >
+        {{ item.wedge.label }}
+      </div>
+    }
+  </div>
+}

@@ -1,0 +1,78 @@
+.game-over {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  border-radius: var(--gs-radius);
+  background: var(--gs-bg-panel);
+  border: 2px solid var(--gs-yellow);
+}
+
+.game-over__banner {
+  font-size: 1.6rem;
+  font-weight: 800;
+  text-align: center;
+  color: var(--gs-yellow);
+  margin: 0;
+}
+
+.game-over__ranking {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.game-over__row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.9rem;
+  border-radius: var(--gs-radius-sm);
+  background: var(--gs-bg-panel-raised);
+}
+
+.game-over__row--winner {
+  background: var(--gs-green);
+  color: var(--gs-ink);
+  font-weight: 800;
+}
+
+.game-over__place {
+  font-weight: 800;
+  min-width: 2.5rem;
+}
+
+.game-over__name {
+  flex: 1;
+}
+
+.game-over__score {
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+}
+
+.game-over__final-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+
+  th,
+  td {
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--gs-border);
+    text-align: left;
+  }
+}
+
+.game-over__correct {
+  color: var(--gs-green);
+  font-weight: 700;
+}
+
+.game-over__incorrect {
+  color: var(--gs-red);
+  font-weight: 700;
+}

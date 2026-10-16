@@ -1,7 +1,8 @@
-<lib-progress-bar [total]="totalTime"
-    [remaining]="remainingTime"
+<lib-progress-bar [total]="totalTime()"
+    [remaining]="remainingTime()"
     [barWidth]="barWidth"
     [barLength]="barLength"
     [verticalMode]="verticalMode"
-    [bgClass]="bgClass">
+    [twoWay]="twoWay"
+    [bgClass]="bgClass()">
 </lib-progress-bar>

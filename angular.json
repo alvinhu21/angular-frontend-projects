@@ -358,6 +358,109 @@
           }
         }
       }
+    },
+    "game-night": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "projects/game-night",
+      "sourceRoot": "projects/game-night/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "browser": "projects/game-night/src/main.ts",
+            "polyfills": [
+              "projects/game-night/src/polyfills.ts",
+              "zone.js"
+            ],
+            "tsConfig": "projects/game-night/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "projects/game-night/public",
+                "output": "/"
+              },
+              {
+                "glob": "**/*",
+                "input": "projects/game-night/src/assets",
+                "output": "/assets"
+              }
+            ],
+            "styles": [
+              "bootstrap/dist/css/bootstrap.min.css",
+              "font-awesome/css/font-awesome.min.css",
+              "projects/game-night/src/styles.scss"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "700kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "game-night:build:production"
+            },
+            "development": {
+              "buildTarget": "game-night:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular/build:extract-i18n"
+        },
+        "test": {
+          "builder": "@angular/build:karma",
+          "options": {
+            "polyfills": [
+              "projects/game-night/src/polyfills.ts",
+              "zone.js",
+              "zone.js/testing"
+            ],
+            "tsConfig": "projects/game-night/tsconfig.spec.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "projects/game-night/public"
+              }
+            ],
+            "styles": [
+              "bootstrap/dist/css/bootstrap.min.css",
+              "font-awesome/css/font-awesome.min.css",
+              "projects/game-night/src/styles.scss"
+            ]
+          }
+        }
+      }
     }
   }
 }

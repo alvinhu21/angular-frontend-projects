@@ -1,0 +1,102 @@
+<main class="jp-stage">
+  <div class="results">
+    <header class="results__header">
+      <a class="results__back" routerLink="/">{{ 'results.backHome' | translate }}</a>
+      <h1 class="results__title">{{ 'results.title' | translate }}</h1>
+      <p class="results__subtitle">{{ 'results.subtitle' | translate }}</p>
+    </header>
+
+    @if (results(); as data) {
+      @if (data.totalItems === 0) {
+        <section class="results__notice">
+          <p>{{ 'results.empty' | translate }}</p>
+          <a class="jp-btn jp-btn--gold" routerLink="/create/JEOPARDY">{{ 'results.hostGame' | translate }}</a>
+        </section>
+      } @else {
+        @if (status() === 'error') {
+          <div class="results__inline-error" role="alert">
+            <span>{{ 'results.error' | translate }}</span>
+            <button type="button" class="jp-btn" (click)="retry()">{{ 'results.retry' | translate }}</button>
+          </div>
+        }
+
+        <div class="results__board" [class.results__board--loading]="status() === 'loading'" [attr.aria-busy]="status() === 'loading'">
+          <table class="standings">
+            <caption class="visually-hidden">
+              {{ 'results.caption' | translate: { page: data.page + 1, total: data.totalPages } }}
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col" class="standings__player">{{ 'results.playerColumn' | translate }}</th>
+                <th scope="col" class="standings__place">{{ 'results.placeColumn' | translate }}</th>
+                <th scope="col" class="standings__score">{{ 'results.scoreColumn' | translate }}</th>
+                <th scope="col" class="standings__game">{{ 'results.gameColumn' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of rows(); track row.resultId; let i = $index) {
+                <tr
+                  class="standings__row"
+                  [class.standings__row--game-start]="startsGame(i)"
+                  [class.standings__row--winner]="row.place === 1"
+                >
+                  <th scope="row" class="standings__player">
+                    <span class="standings__name">{{ row.displayName }}</span>
+                    <!-- Phones drop the Game column; its essentials ride along under the name instead. -->
+                    <span class="standings__player-game">
+                      {{ 'results.gameNumber' | translate: { id: row.gameId } }} · {{ row.completedAt | date: 'MMM d, y' }}
+                    </span>
+                  </th>
+                  <td class="standings__place">
+                    <span class="standings__medal" [class.standings__medal--first]="row.place === 1">
+                      {{ 'results.place' | translate: { place: row.place } }}
+                    </span>
+                    <span class="standings__of">
+                      {{ 'results.ofContestants' | translate: { total: row.contestantCount } }}
+                      @if (row.tied) {
+                        · {{ 'results.tied' | translate }}
+                      }
+                    </span>
+                  </td>
+                  <td class="standings__score" [class.standings__score--negative]="row.finalScore < 0">
+                    {{ row.finalScore | jpMoney }}
+                  </td>
+                  <td class="standings__game">
+                    <span class="standings__game-no">{{ 'results.gameNumber' | translate: { id: row.gameId } }}</span>
+                    <span class="standings__game-meta">
+                      <time [attr.datetime]="row.completedAt">{{ row.completedAt | date: 'MMM d, y, h:mm a' }}</time>
+                    </span>
+                    <span class="standings__game-meta">
+                      {{ 'results.gameDetails' | translate: { code: row.sessionCode, rounds: row.roundCount } }}
+                    </span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        @if (data.totalPages > 1) {
+          <nav class="pager" [attr.aria-label]="'results.pagerLabel' | translate">
+            <button type="button" class="jp-btn" (click)="goTo(page() - 1)" [disabled]="!hasPrevious() || status() === 'loading'">
+              {{ 'results.previous' | translate }}
+            </button>
+            <span class="pager__status" aria-live="polite">
+              {{ 'results.pageOf' | translate: { page: page() + 1, total: totalPages() } }}
+            </span>
+            <button type="button" class="jp-btn" (click)="goTo(page() + 1)" [disabled]="!hasNext() || status() === 'loading'">
+              {{ 'results.next' | translate }}
+            </button>
+          </nav>
+        }
+      }
+    } @else if (status() === 'error') {
+      <section class="results__notice" role="alert">
+        <p>{{ 'results.error' | translate }}</p>
+        <button type="button" class="jp-btn jp-btn--gold" (click)="retry()">{{ 'results.retry' | translate }}</button>
+      </section>
+    } @else {
+      <p class="results__loading" role="status">{{ 'results.loading' | translate }}</p>
+    }
+  </div>
+</main>

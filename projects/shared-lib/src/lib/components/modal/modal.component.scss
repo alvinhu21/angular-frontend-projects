@@ -1,98 +1,120 @@
-body {font-family: Arial, Helvetica, sans-serif;}
-
-/* The Modal (background) */
-.modal {
-  display: block; /* Hidden by default */
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
-  padding-top: 100px; /* Location of the box */
-  left: 0;
-  top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0,0,0); /* Fallback color */
-  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+body {
+  font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Modal Content */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background-color: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(2px);
+}
+
 .modal-content {
   position: relative;
-  background-color: #fefefe;
-  margin: auto;
-  padding: 0;
-  border: 1px solid #888;
-  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+  width: min(100%, 900px);
+  background: #ffffff;
+  border-radius: 1rem;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  box-shadow: 0 1.5rem 2.5rem rgba(15, 23, 42, 0.2);
+  overflow: hidden;
   -webkit-animation-name: animatetop;
-  -webkit-animation-duration: 0.4s;
+  -webkit-animation-duration: 0.25s;
   animation-name: animatetop;
-  animation-duration: 0.4s
+  animation-duration: 0.25s;
 }
 
-/* Add Animation */
 @-webkit-keyframes animatetop {
-  from {top:-300px; opacity:0} 
-  to {top:0; opacity:1}
+  from { opacity: 0; transform: translateY(-12px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes animatetop {
-  from {top:-300px; opacity:0}
-  to {top:0; opacity:1}
+  from { opacity: 0; transform: translateY(-12px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* The Close Button */
+.modal-header,
+.modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.3);
+}
+
+.modal-footer {
+  border-bottom: none;
+  border-top: 1px solid rgba(148, 163, 184, 0.3);
+  background: #ffffff;
+}
+
+.modal-header-content,
+.modal-header-actions {
+  min-width: 0;
+}
+
+.modal-header h1,
+.modal-header h2,
+.modal-header h3,
+.modal-header h4,
+.modal-header h5,
+.modal-header h6 {
+  margin-bottom: 0;
+}
+
 .close {
-  color: #111111;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
+  background: transparent;
+  border: 0;
+  color: #334155;
+  font-size: 2rem;
+  line-height: 1;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
 }
 
 .close:hover,
 .close:focus {
-  color: #000;
-  text-decoration: none;
-  cursor: pointer;
+  background: rgba(148, 163, 184, 0.15);
+  color: #0f172a;
+  outline: 2px solid rgba(79, 70, 229, 0.4);
 }
 
-.modal-header {
-  justify-content: space-between;
-  h1,h2,h3,h4,h5,h6{
-    margin-bottom:0rem;
-  }
+.modal-body {
+  background: #ffffff;
 }
 
-.text-align-left{
+.text-align-left {
   text-align: left;
 }
 
-
-/* Medium devices (landscape tablets, 768px and up) */
 @media only screen and (max-width: 767px) {
-  .modal-body {
-    padding: 1.5rem;
+  .modal-content {
+    width: 100%;
   }
-  .modal-header{
-    padding: 0.5rem 1.5rem;
-  }
-} 
 
-/* Medium devices (landscape tablets, 768px and up) */
+  .modal-body {
+    padding: 1.25rem;
+  }
+
+  .modal-header,
+  .modal-footer {
+    padding: 0.875rem 1.25rem;
+  }
+}
+
 @media only screen and (min-width: 768px) {
   .modal-body {
     padding: 2rem;
   }
-  .modal-header{
-    padding: 0.5rem 2rem;
-  }
-} 
-
-
-.modal-footer {
-  padding: 2px 16px;
-  color: white;
 }
-
 
 @for $i from 0 through 100 {
   .width-#{$i}-pct { width: #{$i}#{"%"}; }

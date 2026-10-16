@@ -1,0 +1,68 @@
+@if (editable()) {
+  <div class="roster__count">
+    <label for="other-players">{{ 'sessionLobby.otherPlayersLabel' | translate }}</label>
+    <select id="other-players" aria-describedby="other-players-hint" (change)="setCount($event)">
+      @for (count of countOptions; track count) {
+        <option [value]="count" [selected]="count === seats().length" [disabled]="count < minCount()">{{ count }}</option>
+      }
+    </select>
+    <p id="other-players-hint" class="roster__hint">{{ 'sessionLobby.otherPlayersHint' | translate }}</p>
+  </div>
+}
+
+<ol class="roster">
+  <li class="roster__seat">
+    <span class="roster__number" aria-hidden="true">1</span>
+    <span class="roster__name">{{ hostName() }}</span>
+    <span class="roster__badge roster__badge--host">{{ 'scoreboard.hostBadge' | translate }}</span>
+  </li>
+
+  @for (seat of seats(); track $index; let i = $index) {
+    @let number = i + 2;
+    <li class="roster__seat" [class.roster__seat--open]="!seat.ai && !seat.playerId">
+      <span class="roster__number" aria-hidden="true">{{ number }}</span>
+
+      @if (editable() && !seat.playerId) {
+        <input
+          class="roster__input"
+          type="text"
+          [maxLength]="maxNameLength"
+          [value]="drafts()[i]"
+          [placeholder]="(seat.ai ? 'sessionLobby.seatAiPlaceholder' : 'sessionLobby.seatOpenPlaceholder') | translate"
+          [attr.aria-label]="'sessionLobby.seatNameAria' | translate: { number }"
+          [attr.aria-invalid]="rejectedName() === i"
+          [attr.aria-describedby]="rejectedName() === i ? 'seat-error-' + i : null"
+          (input)="onDraft(i, $event)"
+          (change)="commitName(i)"
+        />
+        <label class="roster__ai">
+          <input
+            type="checkbox"
+            [checked]="seat.ai"
+            [attr.aria-label]="'sessionLobby.aiCheckboxAria' | translate: { number }"
+            (change)="setAi(i, $event)"
+          />
+          <span aria-hidden="true">{{ 'sessionLobby.aiCheckbox' | translate }}</span>
+        </label>
+      } @else {
+        <span class="roster__name">{{ seat.name || ('sessionLobby.openSeat' | translate) }}</span>
+        @if (seat.ai) {
+          <span class="roster__badge roster__badge--ai">{{ 'scoreboard.aiBadge' | translate }}</span>
+        } @else if (seat.playerId) {
+          <span class="roster__badge roster__badge--joined">{{ 'sessionLobby.joinedBadge' | translate }}</span>
+          @if (!seat.connected) {
+            <span class="roster__badge roster__badge--offline">{{ 'scoreboard.offlineBadge' | translate }}</span>
+          }
+        } @else {
+          <span class="roster__badge roster__badge--open">{{ 'sessionLobby.openBadge' | translate }}</span>
+        }
+      }
+
+      @if (rejectedName() === i) {
+        <p class="roster__error" [id]="'seat-error-' + i" role="alert">{{ 'create.errorProfanity' | translate }}</p>
+      } @else if (editable() && !seat.ai && !seat.playerId) {
+        <p class="roster__status">{{ 'sessionLobby.waitingForJoin' | translate }}</p>
+      }
+    </li>
+  }
+</ol>

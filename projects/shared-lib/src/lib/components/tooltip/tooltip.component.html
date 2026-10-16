@@ -1,5 +1,5 @@
-<div class="tooltip-container" [ngClass]="{'dotted-underline': !faIcon}">
-  <span *ngIf="faIcon" [ngClass]="'fa fa-'+faIcon"></span>
-  <span class="label-text" [ngClass]="{'visually-hidden': faIcon}">{{tooltipLabel | translate}}</span>
-  <span class="tooltip-box" [ngClass]="'tooltip-box-'+tooltipDirection">{{tooltipText | translate}}</span>
+<div class="tooltip-container" [ngClass]="{'dotted-underline': !faIcon}" tabindex="0" [attr.aria-label]="tooltipLabel | translate" [attr.aria-describedby]="tooltipText ? 'tooltip-' + tooltipLabel : null">
+  <span *ngIf="faIcon" class="tooltip-icon" [ngClass]="'fa fa-'+faIcon" aria-hidden="true"></span>
+  <span class="label-text" [ngClass]="{'visually-hidden': faIcon}">{{ tooltipLabel | translate }}</span>
+  <span class="tooltip-box" [id]="'tooltip-' + tooltipLabel" [ngClass]="'tooltip-box-'+tooltipDirection" role="tooltip">{{ tooltipText | translate }}</span>
 </div>

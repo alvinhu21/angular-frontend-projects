@@ -1,0 +1,119 @@
+<main class="lobby-room">
+  <h1>{{ 'sessionLobby.title' | translate }}</h1>
+
+  <div class="lobby-room__code-panel gs-panel">
+    <p class="lobby-room__code-label">{{ 'sessionLobby.codeLabel' | translate }}</p>
+    <p class="lobby-room__code">{{ code }}</p>
+    <p class="lobby-room__code-hint">{{ 'sessionLobby.codeHint' | translate }}</p>
+  </div>
+
+  <section class="gs-panel lobby-room__players" aria-labelledby="players-heading">
+    @if (gameStarted()) {
+      <h2 id="players-heading">{{ 'sessionLobby.playersHeading' | translate: { count: liveSession.players().length } }}</h2>
+      <app-scoreboard [players]="liveSession.players()" [myPlayerId]="null"></app-scoreboard>
+    } @else {
+      <h2 id="players-heading">{{ 'sessionLobby.playersHeading' | translate: { count: liveSession.seats().length + 1 } }}</h2>
+      <app-seat-roster
+        [hostName]="hostName()"
+        [seats]="liveSession.seats()"
+        [editable]="isHost()"
+        (seatsChange)="saveSeats($event)"
+      ></app-seat-roster>
+    }
+  </section>
+
+  @if (errorMessage()) {
+    <p class="lobby-room__error" role="alert">{{ errorMessage() | translate }}</p>
+  }
+
+  @if (!gameStarted()) {
+    @if (isHost()) {
+      <div class="lobby-room__setup gs-panel">
+        @if (isWof()) {
+          <div class="lobby-room__field">
+            <label for="game-duration">{{ 'sessionLobby.durationLabel' | translate }}</label>
+            <select
+              id="game-duration"
+              [ngModel]="gameDurationMinutes()"
+              (ngModelChange)="gameDurationMinutes.set($event)"
+            >
+              <option [ngValue]="10">{{ 'sessionLobby.durationMinutes' | translate: { count: 10 } }}</option>
+              <option [ngValue]="15">{{ 'sessionLobby.durationMinutes' | translate: { count: 15 } }}</option>
+              <option [ngValue]="20">{{ 'sessionLobby.durationMinutes' | translate: { count: 20 } }}</option>
+              <option [ngValue]="30">{{ 'sessionLobby.durationMinutes' | translate: { count: 30 } }}</option>
+            </select>
+            <p class="lobby-room__hint">{{ 'sessionLobby.durationHint' | translate }}</p>
+          </div>
+        } @else {
+          <div class="lobby-room__field">
+            <label for="jeopardy-rounds">{{ 'sessionLobby.roundsLabel' | translate }}</label>
+            <select id="jeopardy-rounds" [ngModel]="jeopardyRounds()" (ngModelChange)="jeopardyRounds.set($event)">
+              @for (option of roundOptions; track option) {
+                <option [ngValue]="option">{{ 'sessionLobby.roundsCount' | translate: { count: option } }}</option>
+              }
+            </select>
+            <p class="lobby-room__hint">{{ 'sessionLobby.roundsHint' | translate }}</p>
+          </div>
+
+          <div class="lobby-room__field">
+            <label for="clue-increment">{{ 'sessionLobby.incrementLabel' | translate }}</label>
+            <select id="clue-increment" [ngModel]="clueBaseIncrement()" (ngModelChange)="clueBaseIncrement.set($event)">
+              @for (option of incrementOptions; track option) {
+                <option [ngValue]="option">${{ option }}</option>
+              }
+            </select>
+            <p class="lobby-room__hint">{{ 'sessionLobby.incrementHint' | translate }}</p>
+            <ul class="lobby-room__preview">
+              @for (row of roundValuePreview(); track row.round) {
+                <li>
+                  {{ 'sessionLobby.roundValues' | translate: { round: row.round, lowest: row.lowest, highest: row.highest } }}
+                </li>
+              }
+            </ul>
+          </div>
+
+          <div class="lobby-room__field">
+            <label class="lobby-room__toggle" for="allow-ties">
+              <input id="allow-ties" type="checkbox" [ngModel]="allowTies()" (ngModelChange)="allowTies.set($event)" aria-describedby="allow-ties-hint" />
+              {{ 'sessionLobby.allowTiesLabel' | translate }}
+            </label>
+            <p id="allow-ties-hint" class="lobby-room__hint">
+              {{ (allowTies() ? 'sessionLobby.allowTiesOnHint' : 'sessionLobby.allowTiesOffHint') | translate }}
+            </p>
+          </div>
+        }
+
+        <div class="lobby-room__field">
+          <label for="ai-difficulty">{{ 'sessionLobby.aiDifficultyLabel' | translate }}</label>
+          <select id="ai-difficulty" [ngModel]="aiDifficulty()" (ngModelChange)="aiDifficulty.set($event)">
+            @for (option of difficultyOptions; track option) {
+              <option [ngValue]="option">{{ 'sessionLobby.aiDifficulty.' + option | translate }}</option>
+            }
+          </select>
+          <p class="lobby-room__hint">{{ 'sessionLobby.aiDifficultyHint' | translate }}</p>
+        </div>
+      </div>
+      <button class="gs-btn gs-btn--primary" [disabled]="!canStart()" (click)="startGame()">
+        {{ (starting() ? 'common.starting' : 'sessionLobby.startButton') | translate }}
+      </button>
+      @if (openSeatCount() > 0) {
+        <p class="lobby-room__hint" role="status">
+          {{
+            (openSeatCount() === 1 ? 'sessionLobby.waitingForSeatsSingular' : 'sessionLobby.waitingForSeatsPlural')
+              | translate: { count: openSeatCount() }
+          }}
+        </p>
+      }
+    } @else {
+      <p class="lobby-room__hint">{{ 'sessionLobby.waitingForHost' | translate }}</p>
+    }
+  } @else {
+    <div class="lobby-room__started gs-panel">
+      <p>{{ 'sessionLobby.started' | translate }}</p>
+      <div class="lobby-room__started-actions">
+        <a class="gs-btn gs-btn--primary" [routerLink]="playRoute()">{{ 'sessionLobby.openControls' | translate }}</a>
+        <a class="gs-btn gs-btn--muted" [routerLink]="boardRoute()">{{ 'sessionLobby.openBoard' | translate }}</a>
+      </div>
+    </div>
+  }
+</main>

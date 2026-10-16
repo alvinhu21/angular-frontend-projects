@@ -1,0 +1,39 @@
+<main class="lobby">
+  <div class="lobby__language">
+    <label for="language-select">{{ 'common.language' | translate }}</label>
+    <select id="language-select" (change)="changeLocale($any($event.target).value)">
+      @for (code of locales; track code) {
+        <option [value]="code" [selected]="code === currentLocale()">{{ localeLabels[code] }}</option>
+      }
+    </select>
+  </div>
+
+  <h1 class="lobby__title">{{ 'lobby.title' | translate }}</h1>
+  <p class="lobby__subtitle">{{ 'lobby.subtitle' | translate }}</p>
+
+  <section class="lobby__section" aria-labelledby="host-heading">
+    <h2 id="host-heading">{{ 'lobby.hostHeading' | translate }}</h2>
+    <div class="lobby__cards">
+      <a class="lobby__card lobby__card--wof" routerLink="/create/WOF">
+        <img src="assets/images/Wheel_Logo.svg" aria-hidden="true" width="320" height="180" alt="…" />
+        <span class="visually-hidden">{{ 'lobby.wofTitle' | translate }}</span>
+        <span class="lobby__card-desc">{{ 'lobby.wofDesc' | translate }}</span>
+      </a>
+      <a class="lobby__card lobby__card--jeopardy" routerLink="/create/JEOPARDY">
+        <img src="assets/images/Jeopardy_Logo.svg" aria-hidden="true" width="320" height="180" alt="…" />
+        <span class="visually-hidden">{{ 'lobby.jeopardyTitle' | translate }}</span>
+        <span class="lobby__card-desc">{{ 'lobby.jeopardyDesc' | translate }}</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="lobby__section" aria-labelledby="join-heading">
+    <h2 id="join-heading">{{ 'lobby.joinHeading' | translate }}</h2>
+    <a class="gs-btn gs-btn--muted" routerLink="/join">{{ 'lobby.joinButton' | translate }}</a>
+  </section>
+
+  <section class="lobby__section" aria-labelledby="results-heading">
+    <h2 id="results-heading">{{ 'lobby.resultsHeading' | translate }}</h2>
+    <a class="gs-btn gs-btn--muted" routerLink="/jeopardy/results">{{ 'lobby.jeopardyResultsButton' | translate }}</a>
+  </section>
+</main>

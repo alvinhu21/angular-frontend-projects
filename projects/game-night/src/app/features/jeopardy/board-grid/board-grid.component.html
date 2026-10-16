@@ -1,0 +1,33 @@
+<div
+  class="board"
+  [class.board--cascade]="cascade"
+  [class.board--interactive]="interactive"
+  [style.--board-columns]="categories.length"
+>
+  @for (category of categories; track category; let column = $index) {
+    <div class="board__column" role="group" [attr.aria-label]="category">
+      <div class="board__category" [style.--delay]="cascadeDelay(column, 0)" aria-hidden="true">
+        <span>{{ category }}</span>
+      </div>
+      @for (row of rows; track row) {
+        @if (cellFor(category, row); as cell) {
+          <button
+            type="button"
+            class="board__tile"
+            [class.board__tile--used]="cell.state === 'ANSWERED'"
+            [class.board__tile--open]="cell.state === 'REVEALED_OPEN'"
+            [class.board__tile--selecting]="selectingId() === cell.cellId"
+            [style.--delay]="cascadeDelay(column, row + 1)"
+            [disabled]="!interactive || cell.state !== 'HIDDEN'"
+            [attr.aria-label]="cellAriaLabel(cell)"
+            (click)="select(cell)"
+          >
+            <span class="board__value">{{ cell.value | jpMoney }}</span>
+          </button>
+        } @else {
+          <div class="board__tile board__tile--used" aria-hidden="true"></div>
+        }
+      }
+    </div>
+  }
+</div>

@@ -1,0 +1,20 @@
+<fieldset class="choices" [disabled]="disabled()">
+  <legend class="jp-form__label choices__legend">{{ legend() }}</legend>
+  <div class="choices__list">
+    @for (choice of choices(); track choice; let i = $index) {
+      <label class="choice" [class.choice--picked]="picked() === choice">
+        <input
+          class="choice__radio"
+          type="radio"
+          [name]="name()"
+          [value]="choice"
+          [checked]="picked() === choice"
+          (change)="pick(choice)"
+          (blur)="onTouched()"
+        />
+        <span class="choice__letter" aria-hidden="true">{{ letterFor(i) }}</span>
+        <span class="choice__text">{{ choice }}</span>
+      </label>
+    }
+  </div>
+</fieldset>

@@ -1,0 +1,23 @@
+.create {
+  max-width: 30rem;
+  margin: 0 auto;
+  padding: 2rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.create__hint {
+  color: var(--gs-text-muted);
+}
+
+.create__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.create__error {
+  color: var(--gs-red);
+  font-weight: 600;
+}
