@@ -25,16 +25,15 @@ export class ModalComponent  {
   @Input() faClass: string = ""
   @Input() faPrefix: "fa" | "far" | "fas" | "fab" | "fal" = "fa";
   @Input() showButtons: boolean = true;
-
   @Input() widthPct: number = 80;
-
   @Input() modalHeaderClass: string = "";
   @Input() modalBodyClass: string = "text-align-left";
   @Input() modalFooterClass: string = "";
-
   @Input() btnOpenModalClass: string = "btn-primary";
-
   @Input() openModalText: string = "common.openModal";
+  @Input() closeButtonLabel: string = 'common.close';
+  @Input() modalAriaLabel: string = '';
+  @Input() overlayClosable: boolean = true;
 
   /**
    * Custom templates supplied by parent components
@@ -65,6 +64,13 @@ export class ModalComponent  {
    */
   closeModal(): void {
     this.isOpen$.next(false);
+  }
+
+  onOverlayClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (this.overlayClosable && target.classList.contains('modal-backdrop')) {
+      this.closeModal();
+    }
   }
 
   get widthPercent(){

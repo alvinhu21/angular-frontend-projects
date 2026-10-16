@@ -1,0 +1,64 @@
+.reel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.5rem;
+  overflow-x: auto;
+}
+
+.reel__wedge {
+  flex: 0 0 auto;
+  min-width: 3.25rem;
+  padding: 0.5rem 0.4rem;
+  border-radius: var(--gs-radius-sm);
+  text-align: center;
+  font-weight: 800;
+  font-size: 0.8rem;
+  opacity: 0.55;
+  transform: scale(0.85);
+  transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+}
+
+.reel__wedge--landed {
+  opacity: 1;
+  transform: scale(1.15);
+  font-size: 1rem;
+  box-shadow: 0 0 0 3px var(--gs-cyan), 0 0 16px rgba(0, 229, 255, 0.5);
+  z-index: 1;
+}
+
+.reel--spinning .reel__wedge {
+  animation: reel-bounce 0.5s ease-in-out infinite;
+}
+
+.reel--spinning .reel__wedge--landed {
+  animation: reel-bounce-landed 0.5s ease-in-out infinite;
+}
+
+@keyframes reel-bounce {
+  0%,
+  100% {
+    transform: scale(0.85) translateY(0);
+  }
+  50% {
+    transform: scale(0.9) translateY(-4px);
+  }
+}
+
+@keyframes reel-bounce-landed {
+  0%,
+  100% {
+    transform: scale(1.15) translateY(0);
+  }
+  50% {
+    transform: scale(1.2) translateY(-6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reel--spinning .reel__wedge,
+  .reel--spinning .reel__wedge--landed {
+    animation: none;
+  }
+}

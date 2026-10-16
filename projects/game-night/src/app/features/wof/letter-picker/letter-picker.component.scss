@@ -1,0 +1,51 @@
+.keys {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(3.1rem, 1fr));
+  gap: 0.5rem;
+}
+
+.keys--vowels {
+  grid-template-columns: repeat(5, minmax(3.1rem, 4.5rem));
+  justify-content: center;
+}
+
+// Styled like a revealed board card, so picking a letter reads as putting it on the board.
+.key {
+  aspect-ratio: 0.8;
+  border: 1px solid rgb(0 0 0 / 0.25);
+  border-radius: 0.35rem;
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #0a1a55;
+  background: linear-gradient(180deg, #ffffff, #dfe6f5);
+  box-shadow: 0 3px 0 rgb(0 0 0 / 0.45);
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.15s ease;
+
+  &:not(:disabled):hover,
+  &:not(:disabled):focus-visible {
+    transform: translateY(-2px);
+    box-shadow:
+      0 3px 0 rgb(0 0 0 / 0.45),
+      0 0 0 3px #e2b23d,
+      0 0 1rem rgb(226 178 61 / 0.6);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    color: rgb(255 255 255 / 0.35);
+    background: rgb(255 255 255 / 0.08);
+    box-shadow: none;
+    text-decoration: line-through;
+  }
+}
+
+.key--vowel:not(:disabled) {
+  background: linear-gradient(180deg, #fff6d6, #f2d27a);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .key {
+    transition: none;
+  }
+}

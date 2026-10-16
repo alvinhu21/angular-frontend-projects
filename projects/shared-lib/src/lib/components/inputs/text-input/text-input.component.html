@@ -1,16 +1,29 @@
-<div [formGroup]="inputFormGroup" [ngClass]="customClasses">
-    <label class="form-check-label" [for]="id" [ngClass]="{'flex-column mb-2': !isHorizontal}">
-        <span *ngIf="!faIcon">{{label | translate}}</span>
-        <i *ngIf="faIcon" class="fa" [ngClass]="faIcon"></i>
+<div [formGroup]="inputFormGroup" class="field-shell" [ngClass]="customClasses">
+    <label class="form-label" [for]="id" [ngClass]="{'d-flex flex-column': !isHorizontal}">
+        <span *ngIf="!faIcon">{{ label | translate }}</span>
+        <i *ngIf="faIcon" class="fa me-2" [ngClass]="faIcon" aria-hidden="true"></i>
     </label>
-    <input [id]="id" 
+
+    <input
+        [id]="id"
         class="form-control"
         [maxlength]="maxlength"
-        [placeholder]="placeholder"
+        [placeholder]="placeholder | translate"
         [formControlName]="controlName"
         [disabled]="disabled"
-        (keydown)="selectCharsOnly($event)"/>
-    <div class="text-danger" *ngFor="let message of errorMessageList">
-        {{message | translate}}
+        [attr.aria-label]="((ariaLabel || label)|translate) || 'Text input'"
+        [attr.aria-describedby]="describedByIds"
+        [class.is-invalid]="controlIsInvalid"
+        (keydown)="selectCharsOnly($event)"
+    />
+
+    <small *ngIf="helpText" class="form-text text-body-secondary" [id]="id + '-help'">
+        {{ helpText | translate }}
+    </small>
+
+    <div *ngIf="errorMessageList.length" class="invalid-feedback d-block" [id]="id + '-errors'">
+        <div *ngFor="let message of errorMessageList">
+            {{ message | translate }}
+        </div>
     </div>
 </div>

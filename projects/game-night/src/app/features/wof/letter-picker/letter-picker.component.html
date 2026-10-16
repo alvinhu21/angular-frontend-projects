@@ -1,0 +1,15 @@
+<div class="keys" [class.keys--vowels]="vowels()">
+  @for (letter of letters(); track letter) {
+    @let isUsed = used().includes(letter);
+    <button
+      class="key"
+      type="button"
+      [class.key--vowel]="vowels()"
+      [disabled]="isUsed"
+      [attr.aria-label]="isUsed ? ('wof.letterAlreadyCalledAria' | translate: { letter }) : null"
+      (click)="pick.emit(letter)"
+    >
+      {{ letter }}
+    </button>
+  }
+</div>

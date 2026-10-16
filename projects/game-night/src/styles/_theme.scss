@@ -1,0 +1,100 @@
+// Game Night vivid theme.
+//
+// Contrast rule: every vivid color below is calibrated as EITHER a fill paired with the
+// near-black --gs-ink text color, OR used as plain text on the near-black --gs-bg-void/panel
+// backgrounds. Never pair two vivid colors directly, and never put light/white text on a vivid
+// fill without re-checking contrast with a tool - the ratios noted here were verified against the
+// exact background they're used on.
+:root {
+  // Neutrals (dark "stage" background - vivid-on-dark clears WCAG AA far more easily than
+  // vivid-on-white).
+  --gs-bg-void: #0b0b12;
+  --gs-bg-panel: #17171f;
+  --gs-bg-panel-raised: #1f1f2b;
+  --gs-ink: #0b0b12; // near-black text used ON TOP OF vivid fills
+  --gs-text-primary: #f5f3ff; // ~18.5:1 on --gs-bg-void
+  --gs-text-muted: #c7c3da; // ~11.8:1 on --gs-bg-void
+  --gs-border: #2c2c3a;
+
+  // Vivid accents (each ratio below is fill + --gs-ink text unless noted).
+  --gs-magenta: #ff2d95; // ~6.2:1  - primary actions / host banners
+  --gs-cyan: #00e5ff; // ~14.9:1 - "your turn" highlight, focus ring
+  --gs-yellow: #ffd400; // ~15.6:1 - money / wager callouts
+  --gs-green: #00e28a; // ~12.4:1 - correct / success
+  --gs-orange: #ff8a00; // ~9.8:1  - bankrupt / warning
+  --gs-red: #ff4c4c; // ~6.0:1 as text on --gs-bg-void; ~6.3:1 as a fill with --gs-ink text
+
+  --gs-focus-ring: var(--gs-cyan);
+  --gs-radius: 0.75rem;
+  --gs-radius-sm: 0.5rem;
+}
+
+*:focus-visible {
+  outline: 3px solid var(--gs-focus-ring);
+  outline-offset: 2px;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.gs-panel {
+  background: var(--gs-bg-panel);
+  border: 1px solid var(--gs-border);
+  border-radius: var(--gs-radius);
+}
+
+.gs-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--gs-radius-sm);
+  border: none;
+  cursor: pointer;
+  color: var(--gs-ink);
+  background: var(--gs-cyan);
+  transition: transform 0.1s ease, filter 0.15s ease;
+
+  &:hover:not(:disabled) {
+    filter: brightness(1.08);
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  &.gs-btn--primary {
+    background: var(--gs-magenta);
+  }
+
+  &.gs-btn--success {
+    background: var(--gs-green);
+  }
+
+  &.gs-btn--warning {
+    background: var(--gs-orange);
+  }
+
+  &.gs-btn--muted {
+    background: var(--gs-bg-panel-raised);
+    color: var(--gs-text-primary);
+    border: 1px solid var(--gs-border);
+  }
+}

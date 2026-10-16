@@ -1,0 +1,130 @@
+.lobby-room {
+  max-width: 32rem;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.lobby-room__code-panel {
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.lobby-room__code-label {
+  margin: 0;
+  color: var(--gs-text-muted);
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+}
+
+.lobby-room__code {
+  margin: 0.25rem 0;
+  font-size: 3rem;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  color: var(--gs-yellow);
+}
+
+.lobby-room__code-hint {
+  margin: 0;
+  color: var(--gs-text-muted);
+  font-size: 0.9rem;
+}
+
+.lobby-room__players {
+  padding: 1.25rem;
+
+  h2 {
+    margin-top: 0;
+    font-size: 1rem;
+    color: var(--gs-text-muted);
+  }
+}
+
+.lobby-room__error {
+  color: var(--gs-red);
+  font-weight: 600;
+}
+
+.lobby-room__hint {
+  color: var(--gs-text-muted);
+  text-align: center;
+}
+
+.lobby-room__setup {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.lobby-room__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+  text-align: center;
+
+  label {
+    font-weight: 700;
+    color: var(--gs-text-primary);
+  }
+
+  select {
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--gs-radius-sm);
+    border: 1px solid var(--gs-border);
+    background: var(--gs-bg-panel-raised);
+    color: var(--gs-text-primary);
+    font-size: 1rem;
+  }
+
+  .lobby-room__hint {
+    margin: 0;
+    font-size: 0.85rem;
+  }
+}
+
+.lobby-room__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+
+  input {
+    width: 1.25rem;
+    height: 1.25rem;
+    accent-color: var(--gs-magenta);
+    cursor: pointer;
+  }
+}
+
+.lobby-room__preview {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--gs-text-muted);
+}
+
+.lobby-room__started {
+  padding: 1.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  border: 2px solid var(--gs-green);
+}
+
+.lobby-room__started-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}

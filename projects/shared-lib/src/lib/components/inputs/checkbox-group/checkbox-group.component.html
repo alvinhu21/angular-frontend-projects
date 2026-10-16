@@ -1,0 +1,80 @@
+<div
+  class="field-shell"
+  role="group"
+  [ngClass]="customClasses"
+  [id]="id"
+  [attr.aria-labelledby]="ariaLabel ? null : id + '-label'"
+  [attr.aria-label]="ariaLabel ? (ariaLabel | translate) : null"
+  [attr.aria-describedby]="describedByIds || null"
+>
+  <div class="checkbox-group-header">
+    <span class="form-label" [id]="id + '-label'">
+      @if (faIcon) {
+        <i class="fa me-2" [ngClass]="faIcon" aria-hidden="true"></i>
+      }
+      <span [class.visually-hidden]="faIcon">{{ label | translate }}</span>
+    </span>
+
+    @if (canShowBulkActions) {
+      <div class="checkbox-group-toolbar">
+        <button
+          type="button"
+          class="btn btn-link btn-sm p-0"
+          [disabled]="isDisabled || allSelected"
+          (click)="selectAll()"
+        >
+          {{ bulkSelectLabel | translate }}
+        </button>
+        <button
+          type="button"
+          class="btn btn-link btn-sm p-0"
+          [disabled]="isDisabled || noneSelected"
+          (click)="clearAll()"
+        >
+          {{ clearAllLabel | translate }}
+        </button>
+      </div>
+    }
+  </div>
+
+  <div class="checkbox-group-options" [ngClass]="{ 'flex-row flex-wrap': isHorizontal, 'flex-column': !isHorizontal }">
+    @for (option of options; track option.value; let i = $index) {
+      <div class="form-check">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          [id]="optionId(i)"
+          [value]="option.value"
+          [checked]="isSelected(option.value)"
+          [disabled]="isDisabled"
+          [class.is-invalid]="controlIsInvalid"
+          [attr.aria-invalid]="controlIsInvalid"
+          (change)="toggleOption(option.value, $any($event.target).checked)"
+        />
+        <label class="form-check-label" [for]="optionId(i)">
+          @if (option.iconClass) {
+            <i class="fa me-2" [ngClass]="option.iconClass" aria-hidden="true"></i>
+          }
+          @if (option.imgSrc) {
+            <img [src]="option.imgSrc" alt="" class="option-img me-2" />
+          }
+          <span>{{ option.label | translate }}</span>
+        </label>
+      </div>
+    }
+  </div>
+
+  @if (helpText) {
+    <small class="form-text text-body-secondary" [id]="id + '-help'">
+      {{ helpText | translate }}
+    </small>
+  }
+
+  @if (errorMessageList.length) {
+    <div class="invalid-feedback d-block" [id]="id + '-errors'">
+      @for (message of errorMessageList; track message) {
+        <div>{{ message | translate }}</div>
+      }
+    </div>
+  }
+</div>

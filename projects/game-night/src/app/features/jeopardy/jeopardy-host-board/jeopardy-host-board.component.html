@@ -1,0 +1,131 @@
+<main class="jp-stage">
+  @if (liveSession.jeopardyState(); as state) {
+    <div class="stage">
+      <header class="stage__bar">
+        @if (roundTitle(); as title) {
+          <h1 class="stage__round">{{ title.key | translate: title.params }}</h1>
+        }
+        @if (screen() === 'board' && !isTiebreaker()) {
+          <p class="stage__control">{{ 'jeopardy.inControl' | translate: { name: playerName(state.playerIdInControl) } }}</p>
+        }
+        <app-sound-toggle class="stage__sound"></app-sound-toggle>
+      </header>
+
+      <div class="stage__screen">
+        @switch (screen()) {
+          @case ('board') {
+            <!-- Re-created per round so each new board plays its fill cascade. -->
+            @for (round of [state.currentRound]; track round) {
+              <app-board-grid [board]="state.board" [cascade]="true"></app-board-grid>
+            }
+            @if (activeClue(); as active) {
+              <section
+                class="jp-clue stage__clue"
+                [class.stage__clue--revealed]="reveal()"
+                [style.transform-origin]="clueOrigin()"
+                animate.enter="jp-clue-enter"
+                animate.leave="jp-clue-leave"
+                aria-live="polite"
+              >
+                @if (clueBanner(); as banner) {
+                  <p class="jp-clue__banner">{{ banner.key | translate: banner.params }}</p>
+                }
+                @if (active.clueText) {
+                  <p class="jp-clue__text stage__clue-text">{{ active.clueText }}</p>
+                } @else if (active.dailyDoubleInProgress) {
+                  <p class="jp-dd">{{ 'jeopardy.dailyDouble' | translate }}</p>
+                  <p class="jp-clue__status">{{ 'jeopardy.wageringInProgress' | translate }}</p>
+                } @else if (isTiebreaker()) {
+                  <!-- A tiebreaker's intro: who's tied, and the category in the banner - its clue follows. -->
+                  @if (roundTitle(); as title) {
+                    <p class="jp-dd">{{ title.key | translate: title.params }}</p>
+                  }
+                  <app-tiebreaker-matchup [contestants]="tiebreakerContestants()"></app-tiebreaker-matchup>
+                }
+                @if (reveal(); as revealed) {
+                  <div class="jp-reveal" animate.enter="jp-reveal-enter">
+                    <p class="jp-reveal__tag">{{ revealed.heading.key | translate: revealed.heading.params }}</p>
+                    <p class="jp-reveal__label">{{ 'jeopardy.correctResponseLabel' | translate }}</p>
+                    <p class="jp-reveal__response">{{ revealed.response }}</p>
+                  </div>
+                }
+                @if (state.clueSubPhase === 'ANSWERING' && state.activeAnswererId) {
+                  <p class="jp-clue__status jp-clue__status--live">{{ 'jeopardy.playerIsAnswering' | translate: { name: playerName(state.activeAnswererId) } }}</p>
+                }
+                @if (phaseTimerLabel(); as timerLabel) {
+                  <app-game-timer
+                    class="stage__timer"
+                    [startsAt]="state.phaseStartedAt"
+                    [endsAt]="state.phaseDeadlineAt"
+                    [label]="timerLabel"
+                  ></app-game-timer>
+                }
+              </section>
+            }
+          }
+          @case ('final') {
+            <section class="jp-clue stage__final" animate.enter="jp-clue-enter" aria-live="polite">
+              <p class="jp-clue__banner">{{ 'jeopardy.finalCategoryHeading' | translate: { category: state.finalCategory } }}</p>
+              @if (state.finalClueText; as clueText) {
+                <p class="jp-clue__text stage__clue-text">{{ clueText }}</p>
+              } @else {
+                <p class="stage__final-category">{{ state.finalCategory }}</p>
+              }
+              @if (state.phase === 'FINAL_WAGER') {
+                <p class="jp-clue__status">
+                  {{ 'jeopardy.waitingForWagers' | translate: { count: state.finalWagerSubmittedPlayerIds?.length ?? 0, total: finalPlayerCount() } }}
+                </p>
+              } @else if (state.phase === 'FINAL_ANSWER_COLLECTION') {
+                <p class="jp-clue__status">
+                  {{ 'jeopardy.waitingForAnswers' | translate: { count: state.finalAnswerSubmittedPlayerIds?.length ?? 0, total: finalPlayerCount() } }}
+                </p>
+                @if (phaseTimerLabel(); as timerLabel) {
+                  <app-game-timer
+                    class="stage__timer"
+                    [startsAt]="state.phaseStartedAt"
+                    [endsAt]="state.phaseDeadlineAt"
+                    [label]="timerLabel"
+                  ></app-game-timer>
+                }
+              }
+              @if (state.players.length > finalPlayerCount()) {
+                <p class="jp-clue__status">
+                  {{ 'jeopardy.finalQualifiers' | translate: { count: finalPlayerCount(), total: state.players.length } }}
+                </p>
+              }
+            </section>
+          }
+          @case ('over') {
+            @if (state.gameWinnerPlayerIds) {
+              <div class="stage__game-over" animate.enter="jp-fade-enter">
+                <app-game-over-panel
+                  [players]="state.players"
+                  [winnerPlayerIds]="state.gameWinnerPlayerIds"
+                  [finalResults]="state.finalResults"
+                ></app-game-over-panel>
+                <a class="jp-btn jp-btn--gold stage__results-link" routerLink="/jeopardy/results">{{ 'jeopardy.viewAllResults' | translate }}</a>
+              </div>
+            }
+          }
+        }
+
+        @if (roundCard(); as card) {
+          <div class="stage__round-card" animate.enter="jp-fade-enter" animate.leave="jp-fade-leave" aria-hidden="true">
+            <span>{{ card.key | translate: card.params }}</span>
+          </div>
+        }
+      </div>
+
+      <section class="stage__podiums" aria-labelledby="scores-heading">
+        <h2 id="scores-heading" class="visually-hidden">{{ 'common.scoreboard' | translate }}</h2>
+        <app-jeopardy-podiums
+          [players]="state.players"
+          [inControlId]="screen() === 'board' && !isTiebreaker() ? state.playerIdInControl : null"
+          [answeringId]="state.clueSubPhase === 'ANSWERING' ? state.activeAnswererId : null"
+        ></app-jeopardy-podiums>
+      </section>
+    </div>
+  } @else {
+    <p class="stage__waiting">{{ 'common.waitingForGame' | translate }}</p>
+  }
+</main>

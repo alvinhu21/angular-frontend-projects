@@ -1,0 +1,355 @@
+.controller {
+  max-width: 43.2rem;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.controller__turn {
+  text-align: center;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--gs-cyan);
+  margin: 0;
+}
+
+.controller__error {
+  color: var(--gs-red);
+  font-weight: 700;
+  text-align: center;
+}
+
+.controller__bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.controller__wheel {
+  --wof-wheel-size: 17rem;
+  --wof-wheel-callout-size: 1.6rem;
+}
+
+.controller__money {
+  text-align: center;
+  font-size: 1.1rem;
+
+  strong {
+    color: var(--gs-yellow);
+  }
+}
+
+.controller__money-sep {
+  margin: 0 0.5rem;
+  color: var(--gs-text-muted);
+}
+
+.controller__actions {
+  display: flex;
+  justify-content: center;
+}
+
+.controller__spin {
+  font-size: 1.2rem;
+  padding: 1rem 2.5rem;
+}
+
+// Spin (or call a consonant) / buy a vowel / solve - side by side where they fit, stacked on a phone.
+.controller__moves {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: 0.75rem;
+}
+
+.controller__move {
+  min-height: 3.25rem;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.controller__move--vowel {
+  background: #e2b23d;
+}
+
+// The Wild Card: its own dark card with a gold rim, spanning the row so it can't be missed.
+.controller__move--wild {
+  grid-column: 1 / -1;
+  background: #12131c;
+  color: var(--gs-yellow);
+  border: 2px solid var(--gs-yellow);
+  box-shadow: 0 0 0.9rem rgb(255 212 0 / 0.35);
+}
+
+// Fortune Frenzy: the clock sits in the upper-left, beside the heading.
+.controller__frenzy-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+
+  h2 {
+    margin: 0;
+  }
+}
+
+.controller__ring-in {
+  min-width: 12rem;
+  min-height: 3.5rem;
+  font-size: 1.3rem;
+}
+
+.controller__frenzy-result {
+  margin: 1rem 0 0.25rem;
+  text-align: center;
+  font-weight: 800;
+  font-size: 1.15rem;
+  color: var(--gs-red);
+}
+
+.controller__frenzy-result--good {
+  color: var(--gs-green);
+}
+
+.controller__bonus-million {
+  margin: 0 0 1rem;
+  text-align: center;
+  font-weight: 900;
+  color: var(--gs-green);
+}
+
+.controller__notices {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  font-weight: 700;
+  color: var(--gs-yellow);
+}
+
+.controller__section--solving {
+  border-color: var(--gs-cyan);
+  box-shadow: 0 0 1rem rgb(0 229 255 / 0.25);
+
+  h2 {
+    color: var(--gs-cyan);
+  }
+}
+
+.controller__confirm {
+  font-size: 1.2rem;
+  padding: 1rem 2.5rem;
+  text-transform: uppercase;
+}
+
+// ---- Modal content (rendered inside <lib-modal>, which supplies the blue broadcast frame) ----
+
+.picker__title,
+.message__title {
+  margin: 0;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-shadow: 0 2px 0 rgb(0 0 0 / 0.45);
+}
+
+.picker__title {
+  font-size: 1.35rem;
+}
+
+.picker__subtitle {
+  margin: 0 0 1rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ffe08a;
+}
+
+.message__title {
+  font-size: 1.6rem;
+}
+
+.message__title--good {
+  color: #ffe08a;
+}
+
+.message__title--bad {
+  color: #ffb3b3;
+}
+
+.message__line {
+  margin: 0.25rem 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.message__ok {
+  min-width: 8rem;
+  text-transform: uppercase;
+}
+
+.controller__section {
+  padding: 1.25rem;
+
+  h2 {
+    margin-top: 0;
+    font-size: 1rem;
+    color: var(--gs-text-muted);
+  }
+}
+
+.controller__keypad {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(2.5rem, 1fr));
+  gap: 0.5rem;
+}
+
+.controller__key {
+  aspect-ratio: 1;
+  border-radius: var(--gs-radius-sm);
+  border: none;
+  font-weight: 800;
+  font-size: 1.1rem;
+  background: var(--gs-bg-panel-raised);
+  color: var(--gs-text-primary);
+  border: 1px solid var(--gs-border);
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  &:not(:disabled):hover {
+    background: var(--gs-cyan);
+    color: var(--gs-ink);
+  }
+}
+
+.controller__key--vowel:not(:disabled):hover {
+  background: var(--gs-yellow);
+}
+
+.controller__solve-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.controller__solve-label {
+  font-size: 0.85rem;
+  color: var(--gs-text-muted);
+}
+
+.controller__solve-input {
+  padding: 0.6rem 0.75rem;
+  border-radius: var(--gs-radius-sm);
+  border: 1px solid var(--gs-border);
+  background: var(--gs-bg-panel-raised);
+  color: var(--gs-text-primary);
+  font-size: 1rem;
+}
+
+.controller__waiting {
+  text-align: center;
+  color: var(--gs-text-muted);
+  padding: 4rem 0;
+}
+
+.controller__hint {
+  text-align: center;
+  color: var(--gs-text-muted);
+  margin: 0 0 1rem;
+
+  strong {
+    color: var(--gs-yellow);
+  }
+}
+
+.controller__spectator {
+  text-align: center;
+  color: var(--gs-text-muted);
+  font-style: italic;
+  margin: 1rem 0 0;
+}
+
+.controller__timer {
+  margin-block: 0.75rem;
+}
+
+.controller__section--tossup {
+  border-color: var(--gs-magenta);
+
+  h2 {
+    color: var(--gs-magenta);
+  }
+}
+
+.controller__section--speedup {
+  border-color: var(--gs-orange);
+
+  h2 {
+    color: var(--gs-orange);
+  }
+}
+
+.controller__section--bonus {
+  border-color: var(--gs-green);
+
+  h2 {
+    color: var(--gs-green);
+  }
+}
+
+.controller__keypad--speedup {
+  margin-bottom: 0.5rem;
+}
+
+.controller__key--selected {
+  background: var(--gs-cyan);
+  color: var(--gs-ink);
+  box-shadow: 0 0 0 2px var(--gs-cyan);
+}
+
+.controller__category-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+// Someone else's pick: the same three categories, deliberately not button-shaped.
+.controller__category-preview {
+  list-style: none;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+
+  li {
+    padding: 0.4rem 0.85rem;
+    font-weight: 800;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--gs-text-primary);
+    border: 1px dashed var(--gs-green);
+    border-radius: var(--gs-radius-sm);
+  }
+}
+
+.controller__bonus-result {
+  text-align: center;
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: var(--gs-text-primary);
+  margin-top: 1rem;
+}
+
+.controller__bonus-result--win {
+  color: var(--gs-green);
+}

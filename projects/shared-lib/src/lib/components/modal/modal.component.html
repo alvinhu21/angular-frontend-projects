@@ -1,32 +1,35 @@
 <ng-content *ngIf="showButtons">
-  <!-- Trigger/Open The Modal -->
-  <button [id]="'btn_' + modalId" class="btn" *ngIf="!faClass" [ngClass]="btnOpenModalClass" (click)="openModal()">{{openModalText | translate}}</button>
-  <span aria-hidden="true" [id]="'btn_' + modalId" *ngIf="faClass" [ngClass]="faPrefix + ' ' + faClass" role="button" (click)="openModal()"></span>
-  <span class="sr-only" *ngIf="faClass" >{{openModalText | translate}}</span>
+  <button [id]="'btn_' + modalId" type="button" class="btn" *ngIf="!faClass" [ngClass]="btnOpenModalClass" (click)="openModal()" [attr.aria-haspopup]="'dialog'" [attr.aria-controls]="modalId">
+    {{ openModalText | translate }}
+  </button>
+  <span aria-hidden="true" [id]="'btn_' + modalId" *ngIf="faClass" [ngClass]="faPrefix + ' ' + faClass" role="button" tabindex="0" (click)="openModal()" (keydown.enter)="openModal()" (keydown.space)="openModal()" [attr.aria-label]="openModalText | translate" [attr.aria-haspopup]="'dialog'" [attr.aria-controls]="modalId"></span>
+  <span class="sr-only" *ngIf="faClass">{{ openModalText | translate }}</span>
 </ng-content>
-<!-- The Modal -->
-<div [id]="modalId" class="modal" *ngIf="isOpen$ | async">
-  <!-- Modal content -->
-  <div class="modal-content" [ngClass]="widthPercent">
+
+<div [id]="modalId" class="modal-backdrop" *ngIf="isOpen$ | async" (click)="onOverlayClick($event)">
+  <div
+    class="modal-content"
+    [ngClass]="widthPercent"
+    role="dialog"
+    [attr.aria-modal]="true"
+    [attr.aria-label]="modalAriaLabel || openModalText"
+    tabindex="-1"
+  >
     <div class="modal-header" [ngClass]="modalHeaderClass">
-      <div class="d-flex justify-content-start align-items-center">
-        <ng-container
-          *ngTemplateOutlet="modalHeaderContent; context: { headerData }">
-        </ng-container>
+      <div class="modal-header-content d-flex justify-content-start align-items-center">
+        <ng-container *ngTemplateOutlet="modalHeaderContent; context: { headerData }"></ng-container>
       </div>
-      <div class="d-flex justify-content-end align-items-center">
-        <span class="close" role="button" (click)="closeModal()">&times;</span>
+      <div class="modal-header-actions d-flex justify-content-end align-items-center">
+        <button type="button" class="close" [attr.aria-label]="closeButtonLabel | translate" (click)="closeModal()">&times;</button>
       </div>
     </div>
+
     <div class="modal-body" [ngClass]="modalBodyClass">
-      <ng-container
-        *ngTemplateOutlet="modalBodyContent; context: { bodyData }">
-      </ng-container>
+      <ng-container *ngTemplateOutlet="modalBodyContent; context: { bodyData }"></ng-container>
     </div>
+
     <div class="modal-footer" [ngClass]="modalFooterClass" *ngIf="modalFooterContent">
-      <ng-container
-        *ngTemplateOutlet="modalFooterContent; context: {footerData }">
-      </ng-container>
+      <ng-container *ngTemplateOutlet="modalFooterContent; context: { footerData }"></ng-container>
     </div>
   </div>
 </div>

@@ -1,0 +1,40 @@
+// A broadcast-style LED readout: a dark bezel with a gold rim, glowing digits.
+:host {
+  display: inline-block;
+}
+
+.frenzy-clock {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--frenzy-clock-width, 5.5ch);
+  padding: 0.2em 0.55em;
+  border: 2px solid var(--gs-yellow);
+  border-radius: var(--gs-radius-sm);
+  background: linear-gradient(180deg, #14141c, #050507);
+  box-shadow:
+    inset 0 0 0.6em rgb(0 0 0 / 0.8),
+    0 0 0.8em rgb(255 212 0 / 0.3);
+  font-size: var(--frenzy-clock-size, 1.6rem);
+}
+
+.frenzy-clock__digits {
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  line-height: 1.1;
+  color: var(--gs-yellow);
+  text-shadow: 0 0 0.35em rgb(255 212 0 / 0.65);
+}
+
+.frenzy-clock--urgent {
+  border-color: var(--gs-red);
+  box-shadow:
+    inset 0 0 0.6em rgb(0 0 0 / 0.8),
+    0 0 0.9em rgb(255 76 76 / 0.55);
+
+  .frenzy-clock__digits {
+    color: var(--gs-red);
+    text-shadow: 0 0 0.35em rgb(255 76 76 / 0.7);
+  }
+}

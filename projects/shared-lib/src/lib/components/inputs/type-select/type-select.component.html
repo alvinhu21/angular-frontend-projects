@@ -1,40 +1,60 @@
-<div [formGroup]="inputFormGroup">
-  <label class="form-check-label" [for]="id" [ngClass]="{'flex-column mb-2': !isHorizontal}">
-      <span *ngIf="!faIcon">{{label | translate}}</span>
-      <i *ngIf="faIcon" class="fa" [ngClass]="faIcon"></i>
+<div [formGroup]="inputFormGroup" class="combobox-container" [ngClass]="customClasses">
+  <label class="form-label fw-semibold mb-1" [for]="id" [ngClass]="{'d-flex flex-column mb-2': !isHorizontal}">
+    <span *ngIf="!faIcon">{{label | translate}}</span>
+    <i *ngIf="faIcon" class="fa me-2" [ngClass]="faIcon"></i>
   </label>
-  <div class="type-select-wrapper" *ngIf="!useTypeSelect" >
-    <select [formControlName]="controlName" class="form-select">
+
+  <!-- Standard Select Mode -->
+  <div class="type-select-wrapper" *ngIf="!useTypeSelect">
+    <select [formControlName]="controlName" class="form-select shadow-sm" [class.is-invalid]="isInvalid">
+      <option value="" disabled selected>{{placeholder | translate}}</option>
       <option *ngFor="let option of options" [value]="option.value">
-        {{option.label}}
+        <span>{{option.label | translate}}</span>
+        @if(option.iconClass){
+          <i class="fa" [ngClass]="option.iconClass"></i>
+        }
       </option>
     </select>
   </div>
-  <div class="type-select-wrapper" *ngIf="useTypeSelect" >
+
+  <!-- Enterprise Searchable Datagrid / Type Select Mode -->
+  <div class="type-select-wrapper" *ngIf="useTypeSelect">
     <input
       type="text"
       [id]="id"
       [attr.list]="'datalist_' + id"
-      [placeholder]="placeholder"
+      [placeholder]="placeholder | translate"
       [value]="displayValue"
       [disabled]="isDisabled"
       [class.is-invalid]="isInvalid"
       (input)="onInputChange($event)"
-      (mousedown)="openPicker($event)" 
+      (mousedown)="openPicker($event)"
       (keyup.enter)="openPicker($event)"
       (blur)="handleBlur()"
-      class="form-control type-select-input"
+      class="form-control type-select-input shadow-sm"
       [formControlName]="controlName"
       autocomplete="off"
     />
+    
+    <!-- Clear button appears dynamically when input has values -->
+    <button 
+      type="button" 
+      class="clear-btn" 
+      *ngIf="clearable && displayValue && !isDisabled" 
+      (click)="clearSelection($event)"
+      title="Clear value">
+      &times;
+    </button>
+
     <span class="select-arrow"></span>
+
     <datalist [id]="'datalist_' + id">
       <option *ngFor="let option of options" [value]="option.label"></option>
     </datalist>
   </div>
-  <div class="text-danger" *ngFor="let message of errorMessageList">
-    {{message  | translate}}
+
+  <!-- Validation Error List -->
+  <div class="invalid-feedback d-block mt-1" *ngFor="let message of errorMessageList">
+    {{message | translate}}
   </div>
 </div>
-
-

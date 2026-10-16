@@ -1,0 +1,254 @@
+<main class="jp-stage">
+  @if (liveSession.jeopardyState(); as state) {
+    <div class="controller">
+      <header class="controller__bar">
+        <div class="controller__money" aria-live="off">
+          <span class="controller__money-label">{{ 'common.yourScoreLabel' | translate }}</span>
+          <strong [class.controller__money--negative]="(liveSession.myPlayer()?.score ?? 0) < 0">{{ liveSession.myPlayer()?.score | jpMoney }}</strong>
+        </div>
+        @if (roundTitle(); as title) {
+          <p class="controller__round">{{ title.key | translate: title.params }}</p>
+        }
+        <app-sound-toggle></app-sound-toggle>
+      </header>
+
+      @if (liveSession.lastError(); as err) {
+        <p class="controller__error" role="alert">{{ err.message }}</p>
+      }
+
+      @if (state.phase === 'BOARD') {
+        <div class="controller__board" animate.enter="jp-fade-enter" animate.leave="jp-fade-leave">
+          @if (canSelectClue()) {
+            <p class="controller__prompt" role="status">{{ 'jeopardy.pickAClue' | translate }}</p>
+          } @else {
+            <p class="controller__prompt controller__prompt--muted" role="status">{{ 'jeopardy.waitingForBoardLeader' | translate }}</p>
+          }
+          <app-board-grid [board]="state.board" [interactive]="canSelectClue()" (cellSelected)="selectClue($event)"></app-board-grid>
+        </div>
+      }
+
+      @if (activeClue(); as active) {
+        <section class="jp-clue controller__clue" animate.enter="jp-clue-enter" aria-live="polite">
+          @if (clueBanner(); as banner) {
+            <p class="jp-clue__banner">{{ banner.key | translate: banner.params }}</p>
+          }
+          @if (active.clueText) {
+            <p class="jp-clue__text controller__clue-text">{{ active.clueText }}</p>
+          } @else if (active.dailyDoubleInProgress) {
+            <p class="jp-dd">{{ 'jeopardy.dailyDouble' | translate }}</p>
+          } @else if (isTiebreaker()) {
+            @if (roundTitle(); as title) {
+              <p class="jp-dd">{{ title.key | translate: title.params }}</p>
+            }
+            <app-tiebreaker-matchup [contestants]="tiebreakerContestants()"></app-tiebreaker-matchup>
+          }
+
+          @if (isTiebreaker()) {
+            <p class="jp-clue__status" [class.jp-clue__status--live]="inTiebreaker()" role="status">
+              {{ (inTiebreaker() ? 'jeopardy.tiebreakerYoureIn' : 'jeopardy.tiebreakerWatching') | translate }}
+            </p>
+          }
+
+          @if (reveal(); as revealed) {
+            <div class="jp-reveal" animate.enter="jp-reveal-enter">
+              <p class="jp-reveal__tag">{{ revealed.heading.key | translate: revealed.heading.params }}</p>
+              <p class="jp-reveal__label">{{ 'jeopardy.correctResponseLabel' | translate }}</p>
+              <p class="jp-reveal__response controller__reveal-response">{{ revealed.response }}</p>
+            </div>
+          }
+
+          @if (phaseTimerLabel(); as timerLabel) {
+            <app-game-timer
+              class="controller__timer"
+              [startsAt]="state.phaseStartedAt"
+              [endsAt]="state.phaseDeadlineAt"
+              [label]="timerLabel"
+            ></app-game-timer>
+          }
+
+          @if (canBuzz()) {
+            <button type="button" class="controller__buzzer" (click)="buzz()">
+              <span>{{ 'jeopardy.buzzIn' | translate }}</span>
+            </button>
+          }
+
+          @if (otherAnswererName(); as name) {
+            <p class="jp-clue__status jp-clue__status--live">{{ 'jeopardy.playerIsAnswering' | translate: { name } }}</p>
+          }
+
+          @if (canSubmitAnswer()) {
+            <form [formGroup]="answerForm" (ngSubmit)="submitAnswer()" class="jp-form">
+              @if (active.responseChoices; as choices) {
+                <app-response-choices
+                  formControlName="value"
+                  name="answer"
+                  [choices]="choices"
+                  [legend]="'common.yourAnswerLabel' | translate"
+                ></app-response-choices>
+              } @else {
+                <label class="jp-form__label" for="answer-input">{{ 'common.yourAnswerLabel' | translate }}</label>
+                @if (multiResponseCount(); as count) {
+                  <p id="answer-hint" class="jp-form__hint">{{ 'jeopardy.multipleResponsesHint' | translate: { count } }}</p>
+                }
+                <input
+                  id="answer-input"
+                  class="jp-input"
+                  type="text"
+                  formControlName="value"
+                  autocomplete="off"
+                  [attr.aria-describedby]="multiResponseCount() ? 'answer-hint' : null"
+                />
+              }
+              <button type="submit" class="jp-btn jp-btn--gold" [disabled]="answerForm.invalid">{{ 'common.submitButton' | translate }}</button>
+            </form>
+          }
+
+          @if (canSubmitDailyDoubleWager()) {
+            <form [formGroup]="dailyDoubleWagerForm" (ngSubmit)="submitDailyDoubleWager()" class="jp-form">
+              <p class="jp-clue__status jp-clue__status--live">{{ 'jeopardy.dailyDoubleFound' | translate }}</p>
+              <label class="jp-form__label" for="dd-wager-input">
+                {{ 'jeopardy.wagerRange' | translate: { min: 5, max: maxDailyDoubleWager() } }}
+              </label>
+              <input
+                id="dd-wager-input"
+                class="jp-input"
+                type="number"
+                inputmode="numeric"
+                formControlName="wager"
+                [min]="5"
+                [max]="maxDailyDoubleWager()"
+              />
+              <button type="submit" class="jp-btn jp-btn--gold" [disabled]="dailyDoubleWagerForm.invalid">
+                {{ 'common.lockInWagerButton' | translate }}
+              </button>
+            </form>
+          }
+
+          @if (canSubmitDailyDoubleAnswer()) {
+            <form [formGroup]="dailyDoubleAnswerForm" (ngSubmit)="submitDailyDoubleAnswer()" class="jp-form">
+              @if (active.responseChoices; as choices) {
+                <app-response-choices
+                  formControlName="value"
+                  name="dd-answer"
+                  [choices]="choices"
+                  [legend]="'common.yourAnswerLabel' | translate"
+                ></app-response-choices>
+              } @else {
+                <label class="jp-form__label" for="dd-answer-input">{{ 'common.yourAnswerLabel' | translate }}</label>
+                @if (multiResponseCount(); as count) {
+                  <p id="dd-answer-hint" class="jp-form__hint">{{ 'jeopardy.multipleResponsesHint' | translate: { count } }}</p>
+                }
+                <input
+                  id="dd-answer-input"
+                  class="jp-input"
+                  type="text"
+                  formControlName="value"
+                  autocomplete="off"
+                  [attr.aria-describedby]="multiResponseCount() ? 'dd-answer-hint' : null"
+                />
+              }
+              <button type="submit" class="jp-btn jp-btn--gold" [disabled]="dailyDoubleAnswerForm.invalid">{{ 'common.submitButton' | translate }}</button>
+            </form>
+          }
+        </section>
+      }
+
+      @if (inFinalWager()) {
+        <section class="jp-clue controller__clue" animate.enter="jp-clue-enter">
+          <p class="jp-clue__banner">{{ 'jeopardy.finalCategoryHeading' | translate: { category: state.finalCategory } }}</p>
+          @if (!isFinalEligible()) {
+            <p class="jp-clue__status">{{ 'jeopardy.notEligibleForFinal' | translate }}</p>
+          } @else if (myFinalWagerSubmitted()) {
+            <p class="jp-clue__status">{{ 'jeopardy.wagerLockedIn' | translate }}</p>
+          } @else {
+            <form [formGroup]="finalWagerForm" (ngSubmit)="submitFinalWager()" class="jp-form">
+              <label class="jp-form__label" for="final-wager-input">
+                {{ 'jeopardy.wagerRange' | translate: { min: 0, max: maxFinalWager() } }}
+              </label>
+              <input
+                id="final-wager-input"
+                class="jp-input"
+                type="number"
+                inputmode="numeric"
+                formControlName="wager"
+                [min]="0"
+                [max]="maxFinalWager()"
+              />
+              <button type="submit" class="jp-btn jp-btn--gold" [disabled]="finalWagerForm.invalid">{{ 'common.lockInWagerButton' | translate }}</button>
+            </form>
+          }
+        </section>
+      }
+
+      @if (inFinalAnswerCollection()) {
+        <section class="jp-clue controller__clue" animate.enter="jp-clue-enter">
+          <p class="jp-clue__banner">{{ 'jeopardy.finalCategoryHeading' | translate: { category: state.finalCategory } }}</p>
+          @if (state.finalClueText; as clueText) {
+            <p class="jp-clue__text controller__clue-text">{{ clueText }}</p>
+          }
+          @if (phaseTimerLabel(); as timerLabel) {
+            <app-game-timer
+              class="controller__timer"
+              [startsAt]="state.phaseStartedAt"
+              [endsAt]="state.phaseDeadlineAt"
+              [label]="timerLabel"
+            ></app-game-timer>
+          }
+          @if (!isFinalEligible()) {
+            <p class="jp-clue__status">{{ 'jeopardy.notEligibleForFinal' | translate }}</p>
+          } @else if (myFinalAnswerSubmitted()) {
+            <p class="jp-clue__status">{{ 'jeopardy.answerLockedIn' | translate }}</p>
+          } @else {
+            <form [formGroup]="finalAnswerForm" (ngSubmit)="submitFinalAnswer()" class="jp-form">
+              @if (state.finalResponseChoices; as choices) {
+                <app-response-choices
+                  formControlName="value"
+                  name="final-answer"
+                  [choices]="choices"
+                  [legend]="'common.yourAnswerLabel' | translate"
+                ></app-response-choices>
+              } @else {
+                <label class="jp-form__label" for="final-answer-input">{{ 'common.yourAnswerLabel' | translate }}</label>
+                @if (finalMultiResponseCount(); as count) {
+                  <p id="final-answer-hint" class="jp-form__hint">{{ 'jeopardy.multipleResponsesHint' | translate: { count } }}</p>
+                }
+                <input
+                  id="final-answer-input"
+                  class="jp-input"
+                  type="text"
+                  formControlName="value"
+                  autocomplete="off"
+                  [attr.aria-describedby]="finalMultiResponseCount() ? 'final-answer-hint' : null"
+                />
+              }
+              <button type="submit" class="jp-btn jp-btn--gold" [disabled]="finalAnswerForm.invalid">{{ 'common.submitButton' | translate }}</button>
+            </form>
+          }
+        </section>
+      }
+
+      <section aria-labelledby="scores-heading">
+        <h2 id="scores-heading" class="visually-hidden">{{ 'common.scoreboard' | translate }}</h2>
+        <app-jeopardy-podiums
+          [players]="state.players"
+          [myPlayerId]="myPlayerId()"
+          [inControlId]="(state.phase === 'BOARD' || activeClue()) && !isTiebreaker() ? state.playerIdInControl : null"
+          [answeringId]="state.clueSubPhase === 'ANSWERING' ? state.activeAnswererId : null"
+          [compact]="true"
+        ></app-jeopardy-podiums>
+      </section>
+
+      @if (state.phase === 'GAME_OVER' && state.gameWinnerPlayerIds) {
+        <app-game-over-panel
+          animate.enter="jp-fade-enter"
+          [players]="state.players"
+          [winnerPlayerIds]="state.gameWinnerPlayerIds"
+          [finalResults]="state.finalResults"
+        ></app-game-over-panel>
+        <a class="jp-btn jp-btn--gold controller__results-link" routerLink="/jeopardy/results">{{ 'jeopardy.viewAllResults' | translate }}</a>
+      }
+    </div>
+  } @else {
+    <p class="controller__waiting">{{ 'common.connecting' | translate }}</p>
+  }
+</main>

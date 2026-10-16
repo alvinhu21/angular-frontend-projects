@@ -1,0 +1,394 @@
+// Jeopardy broadcast theme - an original TV quiz-show look: deep blue stage, bevelled blue
+// tiles, warm-white type, and gold kept for money, scores and active states.
+//
+// Everything is scoped under .jp-stage so the vivid Game Night theme used by the lobby and
+// Wheel of Fortune is untouched. The --gs-* remap below lets shared components (game-over panel)
+// pick up the broadcast palette without Jeopardy-specific code in them.
+//
+// Contrast (WCAG, verified against the exact pairs): warm text on navy-900 17.2:1, on tile 8.4:1,
+// on clue blue 10.1:1; gold on navy-900 12.0:1, on clue blue 7.1:1, on the brightest tile edge
+// 4.2:1 (only used for large display values); ink on gold 12.0:1; dim text on navy-800 9.0:1.
+.jp-stage {
+  --jp-navy-950: #030826;
+  --jp-navy-900: #06103f;
+  --jp-navy-800: #0a1a66;
+  --jp-clue-blue: #1430a0;
+  --jp-tile-top: #1e46cf;
+  --jp-tile-mid: #1a3bb8;
+  --jp-tile-bottom: #132c93;
+  --jp-line: #020516;
+  --jp-text: #fff8e7;
+  --jp-text-dim: #b9c4f0;
+  --jp-gold: #ffcb3d;
+  --jp-gold-deep: #e0a400;
+  --jp-ink: #06103f;
+  --jp-correct: #3ee08f;
+  --jp-wrong: #ff7070;
+
+  --jp-font-display: 'Oswald', 'Arial Narrow', 'Roboto Condensed', Impact, sans-serif;
+  --jp-font-clue: Georgia, 'Noto Serif', 'Times New Roman', serif;
+  --jp-bevel: inset 0 2px 0 rgb(255 255 255 / 0.22), inset 0 -3px 0 rgb(0 0 0 / 0.35);
+  --jp-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  --gs-bg-void: var(--jp-navy-900);
+  --gs-bg-panel: var(--jp-navy-800);
+  --gs-bg-panel-raised: #10247f;
+  --gs-border: #2a44b0;
+  --gs-text-primary: var(--jp-text);
+  --gs-text-muted: var(--jp-text-dim);
+  --gs-ink: var(--jp-ink);
+  --gs-yellow: var(--jp-gold);
+  --gs-focus-ring: var(--jp-gold);
+  --gs-radius: 0.3rem;
+  --gs-radius-sm: 0.2rem;
+
+  display: block;
+  box-sizing: border-box;
+  min-height: 100dvh;
+  color: var(--jp-text);
+  // Stage lighting: a soft key light from above over a deep navy floor.
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgb(76 116 255 / 0.32), transparent 70%),
+    linear-gradient(180deg, var(--jp-navy-900), var(--jp-navy-950));
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  // Bootstrap's grey captions are unreadable on navy (e.g. the Final Jeopardy results table).
+  caption {
+    color: var(--jp-text-dim);
+  }
+}
+
+// Broadcast clue card, shared by the TV board overlay and the phone controller.
+.jp-clue {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: clamp(1.25rem, 4cqi, 3rem);
+  text-align: center;
+  color: var(--jp-text);
+  background:
+    radial-gradient(ellipse at 50% 40%, rgb(255 255 255 / 0.1), transparent 65%),
+    linear-gradient(180deg, #1a3bb8, var(--jp-clue-blue) 55%, #0e2378);
+  border: 3px solid var(--jp-line);
+  box-shadow: var(--jp-bevel), 0 0 0 1px rgb(255 203 61 / 0.35), 0 1.5rem 3rem rgb(0 0 0 / 0.45);
+}
+
+.jp-clue__banner {
+  margin: 0;
+  font-family: var(--jp-font-display);
+  font-weight: 700;
+  font-size: clamp(1rem, 2.4cqi, 1.6rem);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--jp-gold);
+}
+
+.jp-clue__text {
+  margin: 0;
+  max-width: 40ch;
+  font-family: var(--jp-font-clue);
+  font-weight: 700;
+  line-height: 1.3;
+  text-wrap: balance;
+  text-shadow: 0.08em 0.08em 0 rgb(0 0 0 / 0.55);
+}
+
+.jp-clue__status {
+  margin: 0;
+  font-size: clamp(1rem, 2cqi, 1.35rem);
+  color: var(--jp-text-dim);
+}
+
+.jp-clue__status--live {
+  font-family: var(--jp-font-display);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--jp-gold);
+}
+
+.jp-dd {
+  margin: 0;
+  font-family: var(--jp-font-display);
+  font-weight: 700;
+  font-size: clamp(2.25rem, 9cqi, 7rem);
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--jp-gold);
+  text-shadow: 0.05em 0.05em 0 var(--jp-line), 0 0 0.6em rgb(255 203 61 / 0.45);
+  animation: jp-dd-in 700ms var(--jp-ease) both;
+}
+
+// Correct-response reveal, for a clue nobody got: it stays up and the response drops in beneath it
+// on a gold rule, like the graphic a broadcast puts up before going back to the board.
+// Contrast: ink on --jp-wrong 7.0:1; gold on clue blue 7.1:1; dim text on clue blue 6.2:1.
+.jp-reveal {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  width: min(100%, 46rem);
+  padding-top: 1rem;
+
+  // The rule sweeps out from the centre as the reveal lands.
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--jp-gold) 18%, var(--jp-gold) 82%, transparent);
+    animation: jp-rule-sweep 500ms var(--jp-ease) both;
+  }
+}
+
+.jp-reveal__tag {
+  margin: 0;
+  padding: 0.2em 0.9em;
+  font-family: var(--jp-font-display);
+  font-weight: 700;
+  font-size: clamp(1rem, 2.2cqi, 1.5rem);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-wrap: balance;
+  color: var(--jp-ink);
+  background: linear-gradient(180deg, #ff9090, var(--jp-wrong));
+  border: 2px solid var(--jp-line);
+  // A pill on one line, still a tidy lozenge if a long name wraps it onto two.
+  border-radius: 1em;
+  box-shadow: var(--jp-bevel);
+}
+
+.jp-reveal__label {
+  margin: 0.35rem 0 0;
+  font-family: var(--jp-font-display);
+  font-weight: 500;
+  font-size: clamp(0.95rem, 1.8cqi, 1.25rem);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--jp-text-dim);
+}
+
+.jp-reveal__response {
+  margin: 0;
+  max-width: 24ch;
+  font-family: var(--jp-font-display);
+  font-weight: 700;
+  font-size: clamp(2rem, 6.5cqi, 4.75rem);
+  line-height: 1.05;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+  color: var(--jp-gold);
+  text-shadow: 0.05em 0.05em 0 var(--jp-line), 0 0 0.5em rgb(255 203 61 / 0.35);
+  animation: jp-response-wipe 650ms 150ms var(--jp-ease) both;
+}
+
+// Buttons and fields.
+.jp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 3rem;
+  padding: 0.7rem 1.5rem;
+  font-family: var(--jp-font-display);
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--jp-text);
+  background: linear-gradient(180deg, var(--jp-tile-top), var(--jp-tile-bottom));
+  border: 2px solid var(--jp-line);
+  border-radius: var(--gs-radius-sm);
+  box-shadow: var(--jp-bevel);
+  cursor: pointer;
+  transition: transform 120ms ease, filter 150ms ease;
+
+  &:hover:not(:disabled) {
+    filter: brightness(1.12);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(1px) scale(0.98);
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+}
+
+.jp-btn--gold {
+  color: var(--jp-ink);
+  background: linear-gradient(180deg, #ffe07a, var(--jp-gold) 45%, var(--jp-gold-deep));
+}
+
+.jp-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  width: 100%;
+  max-width: 28rem;
+  text-align: left;
+}
+
+.jp-form__label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--jp-text-dim);
+}
+
+// "Needs 2 responses..." - gold so it's caught before the player starts typing, kept to one
+// short line so the answer box stays where their thumb expects it.
+.jp-form__hint {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--jp-gold);
+}
+
+.jp-input {
+  min-height: 3rem;
+  padding: 0.6rem 0.85rem;
+  font-size: 1.15rem;
+  color: var(--jp-text);
+  background: var(--jp-navy-900);
+  border: 2px solid #2a44b0;
+  border-radius: var(--gs-radius-sm);
+  box-shadow: inset 0 2px 6px rgb(0 0 0 / 0.45);
+
+  &:focus-visible {
+    outline: none;
+    border-color: var(--jp-gold);
+    box-shadow: inset 0 2px 6px rgb(0 0 0 / 0.45), 0 0 0 3px rgb(255 203 61 / 0.35);
+  }
+}
+
+// Enter/leave classes for Angular's animate.enter / animate.leave.
+.jp-clue-enter {
+  animation: jp-clue-in 420ms var(--jp-ease) both;
+}
+
+.jp-clue-leave {
+  animation: jp-clue-out 260ms ease-in both;
+}
+
+.jp-fade-enter {
+  animation: jp-fade-in 260ms ease-out both;
+}
+
+.jp-fade-leave {
+  animation: jp-fade-in 180ms ease-in reverse both;
+}
+
+.jp-reveal-enter {
+  animation: jp-reveal-in 420ms var(--jp-ease) both;
+}
+
+@keyframes jp-reveal-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes jp-rule-sweep {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+// Negative insets leave room for the glow, which a plain inset(0) would clip off.
+@keyframes jp-response-wipe {
+  from {
+    opacity: 0;
+    clip-path: inset(-1em 50% -1em 50%);
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(-1em -1em -1em -1em);
+  }
+}
+
+@keyframes jp-clue-in {
+  from {
+    opacity: 0;
+    transform: scale(0.12);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes jp-clue-out {
+  to {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+@keyframes jp-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes jp-dd-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.6) rotate(-4deg);
+    letter-spacing: 0.4em;
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+@keyframes jp-glow-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0.4rem rgb(255 203 61 / 0.45);
+  }
+  50% {
+    box-shadow: 0 0 1.2rem rgb(255 203 61 / 0.9);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .jp-stage *,
+  .jp-stage *::before,
+  .jp-stage *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

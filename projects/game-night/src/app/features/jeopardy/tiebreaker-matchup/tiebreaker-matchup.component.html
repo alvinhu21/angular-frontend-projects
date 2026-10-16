@@ -1,0 +1,13 @@
+<div class="matchup">
+  <p class="matchup__names">
+    @for (contestant of contestants(); track contestant.playerId; let last = $last) {
+      <span class="matchup__name">{{ contestant.displayName }}</span>
+      @if (!last) {
+        <span class="matchup__vs">{{ 'jeopardy.versus' | translate }}</span>
+      }
+    }
+  </p>
+  @if (tiedScore() !== null) {
+    <p class="matchup__score">{{ 'jeopardy.tiedAt' | translate: { amount: (tiedScore() | jpMoney) } }}</p>
+  }
+</div>

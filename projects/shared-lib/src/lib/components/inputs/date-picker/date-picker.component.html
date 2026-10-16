@@ -1,0 +1,30 @@
+<div [formGroup]="inputFormGroup" class="field-shell" [ngClass]="customClasses">
+  <label class="form-label" [for]="id" [ngClass]="{ 'd-flex flex-column': !isHorizontal }">
+    <span *ngIf="!faIcon">{{ label | translate }}</span>
+    <i *ngIf="faIcon" class="fa me-2" [ngClass]="faIcon" aria-hidden="true"></i>
+  </label>
+
+  <input
+    [id]="id"
+    [type]="type"
+    class="form-control"
+    [class.is-invalid]="controlIsInvalid"
+    [formControlName]="controlName"
+    [attr.aria-label]="ariaLabel || label || 'Date input'"
+    [attr.aria-describedby]="describedByIds"
+    [disabled]="disabled"
+    [attr.min]="minDate || null"
+    [attr.max]="maxDate || null"
+    [placeholder]="placeholder"
+  />
+
+  <small *ngIf="helpText" class="form-text text-body-secondary" [id]="id + '-help'">
+    {{ helpText | translate }}
+  </small>
+
+  <div *ngIf="errorMessageList.length" class="invalid-feedback d-block" [id]="id + '-errors'">
+    <div *ngFor="let message of errorMessageList">
+      {{ message | translate }}
+    </div>
+  </div>
+</div>

@@ -1,0 +1,33 @@
+<main class="join">
+  <h1>{{ 'join.title' | translate }}</h1>
+  <p class="join__hint">{{ 'join.hint' | translate }}</p>
+
+  <form class="join__form" [formGroup]="formGroup" (ngSubmit)="joinSession()">
+    <lib-text-input
+      [label]="'join.codeLabel'"
+      [placeholder]="'join.codePlaceholder'"
+      [inputFormGroup]="formGroup"
+      controlName="code"
+      [maxlength]="6"
+      [errorMessages]="codeErrorMessages"
+      [ariaLabel]="'join.codeLabel'"
+    ></lib-text-input>
+
+    <lib-text-input
+      [label]="'join.nameLabel'"
+      [placeholder]="'join.namePlaceholder'"
+      [inputFormGroup]="formGroup"
+      controlName="displayName"
+      [errorMessages]="nameErrorMessages"
+      [ariaLabel]="'join.nameLabel'"
+    ></lib-text-input>
+
+    @if (errorMessage()) {
+      <p class="join__error" role="alert">{{ errorMessage() | translate }}</p>
+    }
+
+    <button type="submit" class="gs-btn gs-btn--primary" [disabled]="submitting()">
+      {{ (submitting() ? 'common.joining' : 'join.submitButton') | translate }}
+    </button>
+  </form>
+</main>

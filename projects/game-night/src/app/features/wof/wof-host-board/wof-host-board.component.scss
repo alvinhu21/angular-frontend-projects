@@ -1,0 +1,258 @@
+.board {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.board__header {
+  position: relative;
+  text-align: center;
+  // Keeps the centred round/category text clear of the sound toggle.
+  padding-inline: 3.5rem;
+}
+
+.board__sound {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.board__deck {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.board__wheel {
+  flex: 1 1 22rem;
+  // Capped by the viewport height too, so the puzzle board and wheel both fit on a TV.
+  --wof-wheel-size: min(32rem, 52vh);
+  --wof-wheel-callout-size: 2.25rem;
+}
+
+.board__deck > .board__scores {
+  flex: 1 1 18rem;
+  align-self: stretch;
+}
+
+.board__round {
+  margin: 0;
+  color: var(--gs-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.85rem;
+}
+
+.board__category {
+  margin: 0.25rem 0 0;
+  font-size: 1.75rem;
+  font-weight: 900;
+  color: var(--gs-magenta);
+}
+
+.board__round-over {
+  text-align: center;
+  color: var(--gs-green);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.board__scores {
+  padding: 1.25rem;
+
+  h2 {
+    margin-top: 0;
+    font-size: 1rem;
+    color: var(--gs-text-muted);
+  }
+}
+
+.board__waiting {
+  text-align: center;
+  color: var(--gs-text-muted);
+  font-size: 1.2rem;
+  padding: 4rem 0;
+}
+
+.board__round--tossup {
+  color: var(--gs-magenta);
+}
+
+.board__round--speedup {
+  color: var(--gs-orange);
+}
+
+.board__round--bonus {
+  color: var(--gs-green);
+}
+
+.board__locked-out {
+  text-align: center;
+  color: var(--gs-text-muted);
+  font-style: italic;
+  margin: -0.75rem 0 0;
+}
+
+.board__countdown-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+// Read from across the room: a longer, thicker bar and bigger numbers than on a phone.
+.board__timer {
+  --gs-timer-max-width: 40rem;
+  --gs-timer-bar-height: 1.1rem;
+  --gs-timer-label-size: 1rem;
+  --gs-timer-seconds-size: 1.9rem;
+}
+
+.board__solving-note {
+  margin: 0;
+  color: var(--gs-text-muted);
+  font-weight: 600;
+}
+
+.board__bonus-result {
+  text-align: center;
+  font-weight: 800;
+  font-size: 1.4rem;
+  color: var(--gs-text-primary);
+}
+
+.board__bonus-result--win {
+  color: var(--gs-green);
+}
+
+// Fortune Frenzy: the clock in the board's upper-left corner, read from across the room.
+.board__frenzy-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.board__frenzy-clock {
+  --frenzy-clock-size: clamp(1.8rem, 4vw, 2.75rem);
+}
+
+.board__frenzy-count {
+  margin: 0;
+  color: var(--gs-text-muted);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.board__frenzy-result {
+  margin: 0;
+  text-align: center;
+  font-weight: 900;
+  font-size: 1.6rem;
+  color: var(--gs-red);
+}
+
+.board__frenzy-result--good {
+  color: var(--gs-green);
+}
+
+.board__frenzy-next {
+  text-align: center;
+}
+
+.board__wild-card {
+  margin: 0;
+  text-align: center;
+  font-weight: 900;
+  font-size: 1.3rem;
+  color: var(--gs-yellow);
+}
+
+.board__bonus-extras {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: var(--gs-yellow);
+}
+
+.board__bonus-extra--million {
+  color: var(--gs-green);
+  font-size: 1.4rem;
+}
+
+// The bonus category pick: three big tiles, read from across the room.
+.board__bonus-pick {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1rem 0;
+}
+
+.board__bonus-pick-heading {
+  margin: 0;
+  text-align: center;
+  color: var(--gs-text-muted);
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.board__bonus-categories {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 1rem;
+}
+
+.board__bonus-category {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 7rem;
+  padding: 1rem 1.25rem;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: clamp(1.4rem, 3vw, 2.1rem);
+  font-weight: 900;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+  color: var(--gs-text-primary);
+  background: linear-gradient(180deg, var(--gs-bg-panel-raised), var(--gs-bg-panel));
+  border: 2px solid var(--gs-green);
+  border-radius: var(--gs-radius);
+  box-shadow: 0 0 1.25rem rgb(0 226 138 / 0.18), inset 0 1px 0 rgb(255 255 255 / 0.06);
+  animation: board-bonus-category-in 360ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+
+  &:nth-child(2) {
+    animation-delay: 120ms;
+  }
+
+  &:nth-child(3) {
+    animation-delay: 240ms;
+  }
+}
+
+@keyframes board-bonus-category-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem) scale(0.96);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .board__bonus-category {
+    animation: none;
+  }
+}

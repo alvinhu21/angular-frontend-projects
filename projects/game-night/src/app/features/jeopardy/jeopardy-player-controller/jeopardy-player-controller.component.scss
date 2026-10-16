@@ -1,0 +1,155 @@
+.controller {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: 1rem 1rem 4rem;
+}
+
+.controller__bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 2px solid rgb(255 203 61 / 0.5);
+}
+
+.controller__money {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+
+  strong {
+    font-family: var(--jp-font-display);
+    font-weight: 700;
+    font-size: 2rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--jp-gold);
+
+    &.controller__money--negative {
+      color: var(--jp-wrong);
+    }
+  }
+}
+
+.controller__money-label {
+  font-size: 0.85rem;
+  color: var(--jp-text-dim);
+}
+
+.controller__round {
+  flex: 1;
+  margin: 0;
+  font-family: var(--jp-font-display);
+  font-weight: 500;
+  font-size: 1.05rem;
+  letter-spacing: 0.06em;
+  text-align: right;
+  text-transform: uppercase;
+  color: var(--jp-text-dim);
+}
+
+.controller__error {
+  margin: 0;
+  padding: 0.6rem 0.85rem;
+  font-weight: 700;
+  color: var(--jp-wrong);
+  border: 2px solid currentColor;
+  border-radius: var(--gs-radius-sm);
+}
+
+.controller__board {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.controller__prompt {
+  margin: 0;
+  font-family: var(--jp-font-display);
+  font-weight: 700;
+  font-size: 1.6rem;
+  letter-spacing: 0.05em;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--jp-gold);
+}
+
+.controller__prompt--muted {
+  font-family: inherit;
+  font-weight: 500;
+  font-size: 1.1rem;
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--jp-text-dim);
+}
+
+.controller__clue {
+  min-height: 16rem;
+}
+
+.controller__clue-text {
+  font-size: clamp(1.3rem, 5.5vw, 2rem);
+}
+
+.controller__timer {
+  font-family: var(--jp-font-display);
+}
+
+// Sized for a phone held at arm's length rather than a TV across the room.
+.controller__reveal-response {
+  font-size: clamp(1.75rem, 9vw, 2.75rem);
+}
+
+.controller__results-link {
+  align-self: center;
+  text-decoration: none;
+}
+
+// The buzzer: one big, unmistakable, thumb-sized target.
+.controller__buzzer {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: min(13rem, 70vw);
+  aspect-ratio: 1;
+  margin: 0.5rem auto;
+  padding: 1rem;
+  font-family: var(--jp-font-display);
+  font-weight: 700;
+  font-size: 1.6rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--jp-ink);
+  background: radial-gradient(circle at 50% 35%, #ffe9a6, var(--jp-gold) 45%, var(--jp-gold-deep) 100%);
+  border: 0.4rem solid var(--jp-line);
+  border-radius: 50%;
+  box-shadow: inset 0 -0.5rem 0 rgb(0 0 0 / 0.25), 0 0.6rem 0 #7a5a00, 0 0 0 0.35rem rgb(255 203 61 / 0.35);
+  cursor: pointer;
+  transition: transform 80ms ease, box-shadow 80ms ease;
+  touch-action: manipulation;
+
+  // "Armed" glow on its own layer so it doesn't replace the button's bevel shadows.
+  &::after {
+    content: '';
+    position: absolute;
+    inset: -0.75rem;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: jp-glow-pulse 1.2s ease-in-out infinite;
+  }
+
+  &:active {
+    transform: translateY(0.45rem);
+    box-shadow: inset 0 -0.2rem 0 rgb(0 0 0 / 0.25), 0 0.15rem 0 #7a5a00;
+  }
+}
+
+.controller__waiting {
+  margin: 0;
+  padding: 30vh 1rem 0;
+  text-align: center;
+  font-size: 1.2rem;
+  color: var(--jp-text-dim);
+}

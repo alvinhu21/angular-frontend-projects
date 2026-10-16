@@ -1,0 +1,524 @@
+<main class="controller">
+  @if (liveSession.wofState(); as state) {
+    @if ((isNormalRoundPhase() && !isRoundOver()) || isSpeedupRound() || isFinalSpin()) {
+      <p class="controller__turn" role="status">
+        @if (isMyTurn()) {
+          {{ 'wof.yourTurn' | translate }}
+        } @else {
+          {{ 'wof.waitingFor' | translate: { name: currentPlayerName() } }}
+        }
+      </p>
+    }
+
+    @if (liveSession.lastError(); as err) {
+      <p class="controller__error" role="alert">{{ err.message }}</p>
+    }
+
+    <div class="controller__bar">
+      <div class="controller__money" aria-live="off">
+        @if (isRoundScoredPhase()) {
+          {{ 'wof.roundScoreLabel' | translate }} <strong>{{ myRoundScore() }}</strong>
+          <span class="controller__money-sep">·</span>
+          {{ 'wof.totalScoreLabel' | translate }} <strong>{{ myScore() }}</strong>
+        } @else {
+          {{ 'common.yourScoreLabel' | translate }} <strong>{{ myScore() }}</strong>
+        }
+      </div>
+      <app-sound-toggle></app-sound-toggle>
+    </div>
+
+    @if (isFrenzy() || isFrenzyPuzzleOver()) {
+      <section class="gs-panel controller__section controller__section--tossup" aria-labelledby="frenzy-heading">
+        <div class="controller__frenzy-bar">
+          <app-frenzy-clock
+            class="controller__frenzy-clock"
+            [remainingMs]="frenzyCountdown.remainingMs()"
+            [urgent]="frenzyCountdown.finalSeconds()"
+          ></app-frenzy-clock>
+          <h2 id="frenzy-heading">{{ 'wof.frenzyHeading' | translate }}</h2>
+        </div>
+        <p class="controller__hint">{{ 'wof.frenzyHint' | translate }}</p>
+        <!-- No auto-submit on the last letter: the answer only goes in from the Submit button. -->
+        <app-puzzle-board
+          #frenzyBoard
+          [template]="state.puzzleTemplate"
+          [category]="state.category"
+          [solving]="canSubmitFrenzyAnswer()"
+          [flash]="frenzyFlash()"
+          [alert]="frenzyCountdown.finalSeconds()"
+        ></app-puzzle-board>
+
+        @if (isFrenzyPuzzleOver()) {
+          <p class="controller__frenzy-result" [class.controller__frenzy-result--good]="state.frenzyOutcome === 'SOLVED'" role="status">
+            @switch (state.frenzyOutcome) {
+              @case ('SOLVED') {
+                {{ 'wof.frenzySolvedBy' | translate: { name: frenzyOutcomeName() } }}
+              }
+              @case ('MISSED') {
+                {{ 'wof.frenzyMissedBy' | translate: { name: frenzyOutcomeName() } }}
+              }
+              @default {
+                {{ 'wof.frenzyUnsolved' | translate }}
+              }
+            }
+          </p>
+          @if (isFrenzyOver()) {
+            <p class="controller__hint">{{ 'wof.frenzyOverStarter' | translate: { name: frenzyStarterName() } }}</p>
+            <div class="controller__actions">
+              <button class="gs-btn gs-btn--primary" type="button" (click)="continueFrenzy()">
+                {{ 'wof.continueButton' | translate }}
+              </button>
+            </div>
+          } @else {
+            <p class="controller__spectator">{{ 'wof.frenzyNextPuzzle' | translate }}</p>
+          }
+        } @else if (canSubmitFrenzyAnswer()) {
+          <app-game-timer
+            class="controller__timer"
+            [startsAt]="state.frenzySolveStartedAt"
+            [endsAt]="state.frenzySolveDeadlineAt"
+            label="wof.answerNow"
+          ></app-game-timer>
+          <p class="controller__hint">{{ 'wof.frenzyAnswerHint' | translate }}</p>
+          <div class="controller__actions">
+            <button
+              class="gs-btn gs-btn--primary"
+              type="button"
+              [disabled]="!frenzyBoard.allLettersFilled()"
+              (click)="submitFrenzyGuess(frenzyBoard.currentGuess())"
+            >
+              {{ 'wof.submitAnswer' | translate }}
+            </button>
+          </div>
+        } @else if (canDeclareFrenzySolve()) {
+          <div class="controller__actions">
+            <button class="gs-btn gs-btn--primary controller__ring-in" type="button" (click)="declareFrenzySolve()">
+              {{ 'wof.iKnowIt' | translate }}
+            </button>
+          </div>
+        } @else {
+          <p class="controller__spectator" role="status">{{ 'wof.solverIsAnswering' | translate: { name: frenzySolverName() } }}</p>
+        }
+      </section>
+    }
+
+    @if (isTripleTossUp()) {
+      <section class="gs-panel controller__section controller__section--tossup" aria-labelledby="triple-tossup-heading">
+        <h2 id="triple-tossup-heading">
+          {{ 'wof.tripleTossUpHeading' | translate: { number: tripleTossUpPuzzleNumber() } }}
+        </h2>
+        <p class="controller__hint">
+          {{ 'wof.tripleTossUpCategoryPrefix' | translate }}
+          <strong>{{ state.tripleTossUpCategory }}</strong>
+          {{ 'wof.tripleTossUpHintSuffix' | translate }}
+        </p>
+        <!-- No auto-submit on the last letter: the answer only goes in from the Submit button. -->
+        <app-puzzle-board
+          #tripleTossUpBoard
+          [template]="state.puzzleTemplate" [category]="state.category"
+          [solving]="canSubmitTripleTossUpAnswer()"
+        ></app-puzzle-board>
+
+        @if (canSubmitTripleTossUpAnswer()) {
+          <app-game-timer
+            class="controller__timer"
+            [startsAt]="state.tripleTossUpSolveStartedAt"
+            [endsAt]="state.tripleTossUpSolveDeadlineAt"
+            label="wof.answerNow"
+          ></app-game-timer>
+          <p class="controller__hint">{{ 'wof.confirmSolveHint' | translate }}</p>
+          <div class="controller__actions">
+            <button
+              class="gs-btn gs-btn--primary"
+              type="button"
+              [disabled]="!tripleTossUpBoard.allLettersFilled()"
+              (click)="submitTripleTossUpGuess(tripleTossUpBoard.currentGuess())"
+            >
+              {{ 'wof.submitAnswer' | translate }}
+            </button>
+          </div>
+        } @else if (canDeclareTripleTossUpSolve()) {
+          <div class="controller__actions">
+            <button class="gs-btn gs-btn--primary" type="button" (click)="declareTripleTossUpSolve()">{{ 'wof.iKnowIt' | translate }}</button>
+          </div>
+        } @else if (isLockedOutOfPuzzle()) {
+          <p class="controller__spectator" role="status">{{ 'wof.alreadyAnsweredSelf' | translate }}</p>
+        } @else {
+          <p class="controller__spectator" role="status">{{ 'wof.solverIsAnswering' | translate: { name: tripleTossUpSolverName() } }}</p>
+        }
+      </section>
+    }
+
+    @if (isFinalSpin()) {
+      <section class="gs-panel controller__section controller__section--speedup" aria-labelledby="final-spin-heading">
+        <h2 id="final-spin-heading">{{ 'wof.finalSpinRoundLabel' | translate }}</h2>
+        <p class="controller__hint">{{ 'wof.finalSpinHint' | translate }}</p>
+
+        <app-wof-wheel class="controller__wheel" [wedges]="state.wheel" [spin]="state.wheelSpin"></app-wof-wheel>
+
+        <div class="controller__actions">
+          <button class="gs-btn gs-btn--primary controller__spin" [disabled]="!canFinalSpin()" (click)="finalSpin()">
+            {{ 'wof.spinButton' | translate }}
+          </button>
+        </div>
+      </section>
+    }
+
+    @if (isRoundOver()) {
+      <section class="gs-panel controller__section" aria-labelledby="round-over-heading">
+        <h2 id="round-over-heading">{{ 'wof.roundComplete' | translate }}</h2>
+        <app-puzzle-board [template]="state.puzzleTemplate" [category]="state.category"></app-puzzle-board>
+        <div class="controller__actions">
+          <button class="gs-btn gs-btn--primary" type="button" (click)="continueToNextRound()">
+            {{ 'wof.continueButton' | translate }}
+          </button>
+        </div>
+      </section>
+    }
+
+    @if (isNormalRoundPhase() && !isRoundOver()) {
+      @if (showGameClock()) {
+        <app-game-timer
+          class="controller__timer"
+          [startsAt]="state.gameClockStartedAt"
+          [endsAt]="state.gameClockEndsAt"
+          label="wof.finalSpinIn"
+        ></app-game-timer>
+      }
+
+      <!-- No auto-submit on the last letter: the answer only goes in from the confirm button. -->
+      <app-puzzle-board
+        #normalBoard
+        [template]="state.puzzleTemplate" [category]="state.category"
+        [solving]="canSubmitSolve()"
+      ></app-puzzle-board>
+
+      <app-wof-wheel
+        class="controller__wheel"
+        [wedges]="state.wheel"
+        [spin]="state.wheelSpin"
+        [landedWedge]="state.lastSpinResult"
+      ></app-wof-wheel>
+
+      @if (canSubmitSolve()) {
+        <section class="gs-panel controller__section controller__section--solving" aria-labelledby="solve-heading">
+          <h2 id="solve-heading">{{ 'wof.solveHeading' | translate }}</h2>
+          <app-game-timer
+            class="controller__timer"
+            [startsAt]="state.solveStartedAt"
+            [endsAt]="state.solveDeadlineAt"
+            label="wof.solveNow"
+          ></app-game-timer>
+          <p class="controller__hint">{{ 'wof.confirmSolveHint' | translate }}</p>
+          <div class="controller__actions">
+            <button
+              class="gs-btn gs-btn--success controller__confirm"
+              type="button"
+              [disabled]="!normalBoard.allLettersFilled()"
+              (click)="confirmSolve(normalBoard.currentGuess())"
+            >
+              {{ 'wof.confirmSolveButton' | translate }}
+            </button>
+          </div>
+        </section>
+      } @else {
+        <div class="controller__moves" role="group" [attr.aria-label]="'wof.movesAriaLabel' | translate">
+          @if (phase() === 'AWAITING_LETTER_GUESS') {
+            <button class="gs-btn gs-btn--primary controller__move" type="button" [disabled]="!canGuessLetter()" (click)="openConsonantPicker()">
+              {{ 'wof.callConsonantButton' | translate }}
+            </button>
+          } @else {
+            <button class="gs-btn gs-btn--primary controller__move" type="button" [disabled]="!canSpin()" (click)="spin()">
+              {{ 'wof.spinTheWheelButton' | translate }}
+            </button>
+          }
+          <button class="gs-btn controller__move controller__move--vowel" type="button" [disabled]="!canOpenVowelPicker()" (click)="openVowelPicker()">
+            {{ 'wof.buyVowelButton' | translate: { cost: money(vowelCost) } }}
+          </button>
+          <button class="gs-btn gs-btn--success controller__move" type="button" [disabled]="!canDeclareSolve()" (click)="declareSolve()">
+            {{ 'wof.solvePuzzleButton' | translate }}
+          </button>
+          @if (canPlayWildCard()) {
+            <button class="gs-btn controller__move controller__move--wild" type="button" (click)="playWildCard()">
+              {{ 'wof.playWildCardButton' | translate: { amount: money(landedValue() ?? 0) } }}
+            </button>
+          }
+        </div>
+
+        @if (!state.consonantsLeft || !state.vowelsLeft) {
+          <ul class="controller__notices" role="status">
+            @if (!state.consonantsLeft) {
+              <li>{{ 'wof.onlyVowelsRemain' | translate }}</li>
+            }
+            @if (!state.vowelsLeft) {
+              <li>{{ 'wof.noMoreVowels' | translate }}</li>
+            }
+          </ul>
+        }
+
+        @if (phase() === 'AWAITING_SOLVE') {
+          <p class="controller__spectator" role="status">{{ 'wof.solverIsSolving' | translate: { name: currentPlayerName() } }}</p>
+        }
+      }
+    }
+
+    @if (isSpeedupRound()) {
+      <section class="gs-panel controller__section controller__section--speedup" aria-labelledby="speedup-heading">
+        <h2 id="speedup-heading">{{ 'wof.speedupRoundLabel' | translate }}</h2>
+        <p class="controller__hint">
+          {{ 'wof.speedupHintPrefix' | translate }} <strong>${{ speedupLetterValue() }}</strong> {{ 'wof.speedupHintSuffix' | translate }}
+        </p>
+
+        <app-puzzle-board [template]="state.puzzleTemplate" [category]="state.category"></app-puzzle-board>
+
+        @if (phase() === 'SPEEDUP_AWAITING_LETTER') {
+          <div class="controller__keypad controller__keypad--speedup">
+            @for (letter of consonants; track letter) {
+              <button
+                class="controller__key"
+                type="button"
+                [disabled]="!canCallSpeedupLetter() || isConsonantGuessed(letter)"
+                (click)="callSpeedupLetter(letter)"
+              >
+                {{ letter }}
+              </button>
+            }
+            @for (letter of vowels; track letter) {
+              <button
+                class="controller__key controller__key--vowel"
+                type="button"
+                [disabled]="!canCallSpeedupLetter() || isVowelBought(letter)"
+                (click)="callSpeedupLetter(letter)"
+              >
+                {{ letter }}
+              </button>
+            }
+          </div>
+        }
+
+        @if (phase() === 'SPEEDUP_AWAITING_SOLVE') {
+          <app-game-timer
+            class="controller__timer"
+            [startsAt]="speedupSolveWindow()?.startsAt"
+            [endsAt]="speedupSolveWindow()?.endsAt"
+            label="wof.solveNow"
+          ></app-game-timer>
+          @if (canSpeedupSolve()) {
+            <form [formGroup]="speedupSolveForm" (ngSubmit)="submitSpeedupSolve()" class="controller__solve-form">
+              <label class="controller__solve-label" for="speedup-solve-input">{{ 'wof.solveItLabel' | translate }}</label>
+              <input id="speedup-solve-input" class="controller__solve-input" type="text" formControlName="guess" autocomplete="off" />
+              <button type="submit" class="gs-btn gs-btn--success" [disabled]="speedupSolveForm.invalid">{{ 'wof.solveButton' | translate }}</button>
+            </form>
+          } @else {
+            <p class="controller__spectator" role="status">{{ 'wof.playerFoundLetterRacing' | translate: { name: currentPlayerName() } }}</p>
+          }
+        }
+      </section>
+    }
+
+    @if (isBonusRound() || (state.phase === 'GAME_OVER' && state.bonusSolved !== null)) {
+      <section class="gs-panel controller__section controller__section--bonus" aria-labelledby="bonus-heading">
+        <h2 id="bonus-heading">{{ 'wof.bonusRoundLabel' | translate }}</h2>
+
+        @if (state.bonusMillionInPlay) {
+          <p class="controller__bonus-million" role="status">{{ 'wof.bonusMillionInPlay' | translate }}</p>
+        }
+
+        @if (phase() === 'BONUS_PICK_CATEGORY') {
+          @if (canPickBonusCategory()) {
+            <p class="controller__hint">{{ 'wof.pickCategoryHint' | translate }}</p>
+            <div class="controller__category-options">
+              @for (category of state.bonusCategoryOptions; track category) {
+                <button class="gs-btn gs-btn--primary" type="button" (click)="pickBonusCategory(category)">
+                  {{ category }}
+                </button>
+              }
+            </div>
+          } @else {
+            <p class="controller__spectator" role="status">{{ 'wof.choosingBonusCategory' | translate: { name: bonusWinnerName() } }}</p>
+            <!-- What they're choosing between, for anyone without the big screen in view. -->
+            @if (state.bonusCategoryOptions; as options) {
+              <ul class="controller__category-preview">
+                @for (category of options; track category) {
+                  <li>{{ category }}</li>
+                }
+              </ul>
+            }
+          }
+        }
+
+        @if (state.bonusPuzzleTemplate) {
+          <app-puzzle-board [template]="state.bonusPuzzleTemplate" [category]="state.bonusCategory"></app-puzzle-board>
+        }
+
+        @if (phase() === 'BONUS_PICK_LETTERS') {
+          @if (canPickBonusLetters()) {
+            <p class="controller__hint">
+              {{ 'wof.pickLettersHint' | translate: { count: bonusConsonantsToPick() } }}
+              @if (bonusHasWildCard()) {
+                <br />
+                <strong>{{ 'wof.bonusWildCardHint' | translate }}</strong>
+              }
+            </p>
+            <div class="controller__keypad">
+              @for (letter of bonusConsonantOptions; track letter) {
+                <button
+                  class="controller__key"
+                  type="button"
+                  [class.controller__key--selected]="selectedBonusConsonants().has(letter)"
+                  [disabled]="!selectedBonusConsonants().has(letter) && selectedBonusConsonants().size >= bonusConsonantsToPick()"
+                  (click)="toggleBonusConsonant(letter)"
+                >
+                  {{ letter }}
+                </button>
+              }
+            </div>
+            <div class="controller__keypad">
+              @for (letter of vowels; track letter) {
+                <button
+                  class="controller__key controller__key--vowel"
+                  type="button"
+                  [class.controller__key--selected]="selectedBonusVowel() === letter"
+                  (click)="selectBonusVowel(letter)"
+                >
+                  {{ letter }}
+                </button>
+              }
+            </div>
+            <button class="gs-btn gs-btn--success" type="button" [disabled]="!canSubmitBonusLetters()" (click)="submitBonusLetters()">
+              {{ 'wof.revealLettersButton' | translate }}
+            </button>
+          } @else {
+            <p class="controller__spectator" role="status">{{ 'wof.pickingLettersNote' | translate: { name: bonusWinnerName() } }}</p>
+          }
+        }
+
+        @if (phase() === 'BONUS_SOLVE') {
+          <app-game-timer
+            class="controller__timer"
+            [startsAt]="bonusSolveWindow()?.startsAt"
+            [endsAt]="bonusSolveWindow()?.endsAt"
+            label="wof.solveNow"
+          ></app-game-timer>
+          @if (canBonusSolve()) {
+            <form [formGroup]="bonusSolveForm" (ngSubmit)="submitBonusSolve()" class="controller__solve-form">
+              <label class="controller__solve-label" for="bonus-solve-input">{{ 'wof.solveBonusPuzzleLabel' | translate }}</label>
+              <input id="bonus-solve-input" class="controller__solve-input" type="text" formControlName="guess" autocomplete="off" />
+              <button type="submit" class="gs-btn gs-btn--success" [disabled]="bonusSolveForm.invalid">{{ 'wof.solveButton' | translate }}</button>
+            </form>
+          } @else {
+            <p class="controller__spectator" role="status">{{ 'wof.solvingBonusPuzzleNote' | translate: { name: bonusWinnerName() } }}</p>
+          }
+        }
+
+        @if (state.phase === 'GAME_OVER' && state.bonusSolved !== null) {
+          <p class="controller__bonus-result" [class.controller__bonus-result--win]="state.bonusSolved" role="status">
+            @if (state.bonusSolved && state.bonusPrizeAmount === 1000000) {
+              {{ 'wof.bonusWonMillionMessage' | translate: { name: bonusWinnerName() } }}
+            } @else if (state.bonusSolved) {
+              {{ 'wof.bonusWonMessage' | translate: { name: bonusWinnerName(), amount: state.bonusPrizeAmount } }}
+            } @else {
+              {{ 'wof.bonusLostMessage' | translate: { name: bonusWinnerName(), amount: state.bonusPrizeAmount } }}
+            }
+          </p>
+        }
+      </section>
+    }
+
+    <section class="gs-panel controller__section" aria-labelledby="scores-heading">
+      <h2 id="scores-heading">{{ 'common.scoreboard' | translate }}</h2>
+      <app-scoreboard
+        [players]="state.players"
+        [currentPlayerId]="scoreboardHighlightPlayerId()"
+        [myPlayerId]="myPlayerId()"
+        [roundScores]="state.roundScores"
+        [wildCardHolderId]="state.wildCardHolderId"
+        [millionWedgeHolderId]="state.millionWedgeHolderId"
+        [millionWedgeSecured]="state.millionWedgeSecured"
+      ></app-scoreboard>
+    </section>
+
+    @if (state.phase === 'GAME_OVER' && state.gameWinnerPlayerIds) {
+      <app-game-over-panel [players]="state.players" [winnerPlayerIds]="state.gameWinnerPlayerIds"></app-game-over-panel>
+    }
+  } @else {
+    <p class="controller__waiting">{{ 'common.connecting' | translate }}</p>
+  }
+
+  <!-- Opened from code only (no built-in trigger button); outside the state block so they always exist. -->
+  <lib-modal
+    #consonantModal
+    appModalFocus
+    class="gs-modal"
+    modalId="wof-consonant-modal"
+    closeButtonLabel="common.close"
+    [showButtons]="false"
+    [modalAriaLabel]="'wof.consonantModalTitle' | translate"
+    [modalHeaderContent]="consonantHeader"
+    [modalBodyContent]="consonantBody"
+  ></lib-modal>
+  <ng-template #consonantHeader>
+    <h2 class="picker__title">{{ 'wof.consonantModalTitle' | translate }}</h2>
+  </ng-template>
+  <ng-template #consonantBody>
+    @if (landedValue(); as value) {
+      <p class="picker__subtitle">
+        {{ (wildCardInPlay() ? 'wof.consonantModalWildCardValue' : 'wof.consonantModalValue') | translate: { amount: money(value) } }}
+      </p>
+    }
+    <app-letter-picker [letters]="consonants" [used]="calledConsonants()" (pick)="guessLetter($event)"></app-letter-picker>
+  </ng-template>
+
+  <lib-modal
+    #vowelModal
+    appModalFocus
+    class="gs-modal"
+    modalId="wof-vowel-modal"
+    closeButtonLabel="common.close"
+    [showButtons]="false"
+    [modalAriaLabel]="'wof.vowelModalTitle' | translate"
+    [modalHeaderContent]="vowelHeader"
+    [modalBodyContent]="vowelBody"
+  ></lib-modal>
+  <ng-template #vowelHeader>
+    <h2 class="picker__title">{{ 'wof.vowelModalTitle' | translate }}</h2>
+  </ng-template>
+  <ng-template #vowelBody>
+    <p class="picker__subtitle">
+      {{ 'wof.vowelModalCost' | translate: { cost: money(vowelCost), funds: money(myTotalFunds()) } }}
+    </p>
+    <app-letter-picker vowels [letters]="vowels" [used]="boughtVowels()" (pick)="buyVowel($event)"></app-letter-picker>
+  </ng-template>
+
+  <lib-modal
+    #messageModal
+    appModalFocus
+    class="gs-modal"
+    modalId="wof-message-modal"
+    closeButtonLabel="common.close"
+    [showButtons]="false"
+    [modalAriaLabel]="turnMessage() ? (turnMessage()!.title.key | translate: turnMessage()!.title.params) : ''"
+    [modalHeaderContent]="messageHeader"
+    [modalBodyContent]="messageBody"
+    [modalFooterContent]="messageFooter"
+  ></lib-modal>
+  <ng-template #messageHeader>
+    @if (turnMessage(); as message) {
+      <h2 class="message__title" [class]="'message__title--' + message.tone">
+        {{ message.title.key | translate: message.title.params }}
+      </h2>
+    }
+  </ng-template>
+  <ng-template #messageBody>
+    @if (turnMessage(); as message) {
+      @for (line of message.lines; track $index) {
+        <p class="message__line">{{ line.key | translate: line.params }}</p>
+      }
+    }
+  </ng-template>
+  <ng-template #messageFooter>
+    <button class="gs-btn gs-btn--primary message__ok" type="button" data-autofocus (click)="closeMessage()">
+      {{ 'wof.messageOk' | translate }}
+    </button>
+  </ng-template>
+</main>

@@ -1,0 +1,162 @@
+.roster__count {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  margin-bottom: 1rem;
+
+  label {
+    font-weight: 700;
+  }
+
+  select {
+    min-width: 4.5rem;
+    min-height: 2.75rem;
+    padding: 0.4rem 0.75rem;
+    border-radius: var(--gs-radius-sm);
+    border: 1px solid var(--gs-border);
+    background: var(--gs-bg-panel-raised);
+    color: var(--gs-text-primary);
+    font-size: 1.05rem;
+    font-weight: 700;
+  }
+}
+
+.roster__hint {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--gs-text-muted);
+}
+
+.roster {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+// Number, name (or name field), then badge / AI checkbox; a status line wraps underneath.
+.roster__seat {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--gs-border);
+  border-radius: var(--gs-radius-sm);
+  background: var(--gs-bg-panel-raised);
+}
+
+.roster__seat--open {
+  border-style: dashed;
+}
+
+.roster__number {
+  flex: none;
+  width: 1.9rem;
+  height: 1.9rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-weight: 900;
+  color: var(--gs-ink);
+  background: var(--gs-yellow);
+}
+
+.roster__name {
+  flex: 1 1 8rem;
+  min-width: 0;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.roster__seat--open .roster__name {
+  color: var(--gs-text-muted);
+  font-style: italic;
+}
+
+.roster__input {
+  flex: 1 1 8rem;
+  min-width: 0;
+  min-height: 2.75rem;
+  padding: 0.4rem 0.7rem;
+  border-radius: var(--gs-radius-sm);
+  border: 1px solid var(--gs-border);
+  background: var(--gs-bg-void);
+  color: var(--gs-text-primary);
+  font-size: 1rem;
+
+  &[aria-invalid='true'] {
+    border-color: var(--gs-red);
+  }
+}
+
+// A generous tap target around a small box.
+.roster__ai {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.75rem;
+  padding: 0 0.5rem;
+  font-weight: 800;
+  cursor: pointer;
+
+  input {
+    width: 1.3rem;
+    height: 1.3rem;
+    accent-color: var(--gs-cyan);
+    cursor: pointer;
+  }
+}
+
+.roster__badge {
+  flex: none;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--gs-ink);
+}
+
+.roster__badge--host {
+  background: var(--gs-magenta);
+}
+
+.roster__badge--ai {
+  background: var(--gs-cyan);
+}
+
+.roster__badge--joined {
+  background: var(--gs-green);
+}
+
+.roster__badge--offline {
+  background: var(--gs-orange);
+}
+
+.roster__badge--open {
+  color: var(--gs-text-muted);
+  background: transparent;
+  border: 1px dashed var(--gs-border);
+}
+
+.roster__status,
+.roster__error {
+  flex-basis: 100%;
+  margin: 0 0 0 2.65rem;
+  font-size: 0.85rem;
+}
+
+.roster__status {
+  color: var(--gs-text-muted);
+}
+
+.roster__error {
+  color: var(--gs-red);
+  font-weight: 700;
+}

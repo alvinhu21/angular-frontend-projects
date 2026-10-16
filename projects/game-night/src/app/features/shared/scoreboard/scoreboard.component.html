@@ -1,0 +1,46 @@
+<ul class="scoreboard" role="list" [attr.aria-label]="'scoreboard.ariaLabel' | translate">
+  @for (player of players; track player.playerId) {
+    <li
+      class="scoreboard__row"
+      [class.scoreboard__row--turn]="player.playerId === currentPlayerId"
+      [class.scoreboard__row--me]="player.playerId === myPlayerId"
+    >
+      <span class="scoreboard__name">
+        {{ player.displayName }}
+        @if (player.host) {
+          <span class="scoreboard__badge" [attr.aria-label]="'scoreboard.hostAriaLabel' | translate">{{ 'scoreboard.hostBadge' | translate }}</span>
+        }
+        @if (player.ai) {
+          <span class="scoreboard__badge scoreboard__badge--ai" [attr.aria-label]="'scoreboard.aiAriaLabel' | translate">{{ 'scoreboard.aiBadge' | translate }}</span>
+        }
+        @if (player.playerId === currentPlayerId) {
+          <span class="scoreboard__badge scoreboard__badge--turn" [attr.aria-label]="'scoreboard.turnAriaLabel' | translate">{{ 'scoreboard.turnBadge' | translate }}</span>
+        }
+        @if (!player.connected) {
+          <span class="scoreboard__badge scoreboard__badge--offline" [attr.aria-label]="'scoreboard.offlineAriaLabel' | translate">{{ 'scoreboard.offlineBadge' | translate }}</span>
+        }
+      </span>
+      <span class="scoreboard__score">
+        {{ player.score | number }}
+        @if (roundScores && roundScoreFor(player.playerId) !== 0) {
+          <span class="scoreboard__round-score">{{ 'scoreboard.roundScoreSuffix' | translate: { amount: roundScoreFor(player.playerId) } }}</span>
+        }
+        @if (player.playerId === wildCardHolderId || player.playerId === millionWedgeHolderId) {
+          <span class="scoreboard__tokens">
+            @if (player.playerId === wildCardHolderId) {
+              <span class="scoreboard__token scoreboard__token--wild">{{ 'scoreboard.wildCardToken' | translate }}</span>
+            }
+            @if (player.playerId === millionWedgeHolderId) {
+              <span class="scoreboard__token scoreboard__token--million" [class.scoreboard__token--pending]="!millionWedgeSecured">
+                {{ 'scoreboard.millionWedgeToken' | translate }}
+                @if (!millionWedgeSecured) {
+                  <span class="visually-hidden">{{ 'scoreboard.millionWedgePending' | translate }}</span>
+                }
+              </span>
+            }
+          </span>
+        }
+      </span>
+    </li>
+  }
+</ul>

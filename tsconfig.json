@@ -57,6 +57,12 @@
     },
     {
       "path": "./projects/pokemon-webapp/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/game-night/tsconfig.app.json"
+    },
+    {
+      "path": "./projects/game-night/tsconfig.spec.json"
     }
   ]
 }

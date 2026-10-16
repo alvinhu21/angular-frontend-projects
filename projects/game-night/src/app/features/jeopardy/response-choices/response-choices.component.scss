@@ -1,0 +1,109 @@
+// Answer bars for a list clue: bevelled blue like the board tiles, gold letter badges, and a gold
+// ring on the pick - a quiz-show answer strip rather than a form control. Text stays warm white on
+// every state (5.5:1 or better); the pick is carried by the ring and glow, not by colour alone.
+:host {
+  display: block;
+}
+
+.choices {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+// Undo Bootstrap's floated, oversized legend so it reads like the other form labels.
+.choices__legend {
+  float: none;
+  width: auto;
+  margin: 0 0 0.6rem;
+  padding: 0;
+}
+
+.choices__list {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.choice {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  min-height: 3.25rem;
+  padding: 0.5rem 1rem 0.5rem 0.6rem;
+  font-family: var(--jp-font-display);
+  font-weight: 700;
+  font-size: clamp(1.15rem, 4.6vw, 1.4rem);
+  line-height: 1.15;
+  letter-spacing: 0.03em;
+  color: var(--jp-text);
+  background: linear-gradient(180deg, var(--jp-tile-top), var(--jp-tile-bottom));
+  border: 2px solid var(--jp-line);
+  border-radius: var(--gs-radius-sm);
+  box-shadow: var(--jp-bevel);
+  cursor: pointer;
+  transition: transform 120ms ease, filter 150ms ease, box-shadow 160ms ease;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+
+  &:hover {
+    filter: brightness(1.12);
+  }
+
+  &:active {
+    transform: translateY(1px) scale(0.99);
+  }
+
+  // Keyboard focus sits on the hidden radio - show it on the whole bar.
+  &:has(.choice__radio:focus-visible) {
+    outline: 3px solid var(--jp-gold);
+    outline-offset: 3px;
+  }
+}
+
+.choice--picked {
+  background: linear-gradient(180deg, #2a56e6, var(--jp-tile-mid));
+  border-color: var(--jp-gold);
+  box-shadow: var(--jp-bevel), 0 0 0 2px var(--jp-gold), 0 0 1.1rem rgb(255 203 61 / 0.45);
+}
+
+// Visually hidden, but still focusable and announced as a radio.
+.choice__radio {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.choice__letter {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  font-size: 1.05rem;
+  color: var(--jp-ink);
+  background: linear-gradient(180deg, #ffe07a, var(--jp-gold) 45%, var(--jp-gold-deep));
+  border: 2px solid var(--jp-line);
+  border-radius: 50%;
+  box-shadow: inset 0 -2px 0 rgb(0 0 0 / 0.25);
+}
+
+.choice--picked .choice__letter {
+  box-shadow: inset 0 -2px 0 rgb(0 0 0 / 0.25), 0 0 0.7rem rgb(255 203 61 / 0.85);
+}
+
+.choice__text {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.choices:disabled .choice {
+  cursor: not-allowed;
+  opacity: 0.5;
+  filter: none;
+  transform: none;
+}

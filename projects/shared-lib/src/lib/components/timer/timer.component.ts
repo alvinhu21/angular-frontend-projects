@@ -17,10 +17,14 @@ export class TimerComponent implements OnInit, OnDestroy {
   destroy$ = new Subject<void>();
   timer$ = timer(0,10);
   timeLeft = 0;
-  
+
+  get formattedLabel(): string {
+    return this.label || 'Time remaining';
+  }
+
   ngOnInit(){
     this.timer$.pipe(
-      takeUntil(this.destroy$), 
+      takeUntil(this.destroy$),
       tap(_ => { this.timeLeft = this.endDate.valueOf() - (new Date()).valueOf(); } ))
     .subscribe();
   }
@@ -28,6 +32,4 @@ export class TimerComponent implements OnInit, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
   }
-
-    
 }
